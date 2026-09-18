@@ -1,3 +1,34 @@
-from django.test import TestCase
+from django.test import TestCase, Client
+import json
 
-# Create your tests here.
+class SignalingTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_create_room(self):
+        response = self.client.post('/api/create-room/')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIn('room_id', data)
+        self.assertEqual(len(data['room_id']), 6)
+
+    def test_signaling_flow(self):
+        # Create room
+        res = self.client.post('/api/create-room/')
+        room_id = res.json()['room_id']
+
+        # Offerer posts offer
+        offer_payload = {
+            'sender': 'offerer',
+            'type': 'offer',
+            'offer': {'type': 'offer', 'sdp': 'v=0\r\ntest'}
+        }
+        res_offer = self.client.post(f'/api/signal/{room_id}/', data=json.dumps(offer_payload), content_type='application/json')
+        self.assertEqual(res_offer.status_code, 200)
+
+        # Answerer polls and receives offer
+        poll_res = self.client.get(f'/api/signal/{room_id}/?sender=answerer&after=0')
+        self.assertEqual(poll_res.status_code, 200)
+        msgs = poll_res.json().get('messages', [])
+        self.assertEqual(len(msgs), 1)
+        self.assertEqual(msgs[0]['type'], 'offer')

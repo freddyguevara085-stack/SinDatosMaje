@@ -29,6 +29,22 @@ En muchas aulas de Latinoamérica el internet es lento, inestable o simplemente 
 
 **SinDatosMaje** convierte cualquier laptop en un servidor local de transferencia directa. Solo necesitas una red Wi-Fi (puede ser el hotspot de un celular **sin saldo ni internet**). El profesor suelta el archivo, los alumnos escanean un QR o escriben un código de 6 letras, y el archivo viaja **directo de dispositivo a dispositivo** por WebRTC sin tocar ningún servidor externo.
 
+## Dos Modos de Conexión
+
+SinDatosMaje cuenta con dos modalidades para adaptarse a cualquier situación en el aula:
+
+1. **📷 Modo Offline Puro (QR a QR — Celular a Celular):**
+   - **Cero laptop, cero servidor, cero internet.**
+   - Dos celulares con la PWA instalada conectados a la misma red Wi-Fi o Hotspot móvil (¡sin datos!).
+   - El emisor genera un QR de oferta WebRTC comprimido con `lz-string`.
+   - El receptor lo escanea con su cámara y genera un QR de respuesta en su pantalla.
+   - El emisor escanea la respuesta del receptor y la transferencia P2P inicia de inmediato a velocidad Wi-Fi local.
+
+2. **📶 Modo Aula (Misma Wi-Fi con Servidor Django):**
+   - El profesor o un alumno corre la app en su laptop.
+   - Los alumnos en la misma red escanean el QR o ingresan el código de sala de 6 letras.
+   - Conexión asistida automática con un solo escaneo.
+
 ---
 
 ## Características
@@ -37,15 +53,32 @@ En muchas aulas de Latinoamérica el internet es lento, inestable o simplemente 
 |---|---|
 | **100% Offline** | Funciona en redes Wi-Fi sin acceso a internet |
 | **Transferencia P2P** | WebRTC `RTCDataChannel` — velocidad LAN completa (50–300 Mbps) |
+| **Modo QR a QR** | Handshake WebRTC bidireccional por cámara, sin servidor de señalización |
 | **Privacidad total** | Los archivos nunca salen de la red local |
 | **PWA instalable** | Se instala como app nativa en Android, iOS y Windows |
-| **Sin CDNs externos** | Tailwind, fuentes y librerías empaquetadas localmente |
+| **Sin CDNs externos** | Tailwind, fuentes, QRCode, HTML5-QRCode y LZ-String locales |
 | **UI Sketch-Note** | Interfaz estilo libreta escolar dibujada a mano |
 
 ---
 
 ## Arquitectura
 
+### 1. Modo Offline Puro (QR a QR entre Celulares)
+```
+Emisor (Celular PWA)                                       Receptor (Celular PWA)
+      │                                                              │
+      │── 1. Selecciona apunte / archivo                             │
+      │── 2. Genera Oferta WebRTC + ICE candidatos locales           │
+      │── 3. Muestra QR de Oferta (SDP comprimido con LZString) ────>│ (Receptor escanea con cámara)
+      │                                                              │── 4. Genera Respuesta WebRTC
+      │<─ 5. Escanea QR de Respuesta en pantalla del receptor ───────│── 5. Muestra QR de Respuesta
+      │
+      │══════════════════ 6. Enlace P2P directo vía Wi-Fi local ══════════════════│
+      │────────────────── Archivo en chunks de 32 KB ─────────────────────────────>│
+      │                      (cero servidor, cero datos, cero internet)            │
+```
+
+### 2. Modo Aula (Con Servidor Django de Señalización)
 ```
 Emisor (Laptop)                    Servidor Django                   Receptor (Celular)
       │                           (solo señalización)                      │

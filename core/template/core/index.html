@@ -27,6 +27,10 @@
   <!-- html5-qrcode local para escaneo de QR mediante cámara -->
   <script src="{% static 'vendor/html5-qrcode.min.js' %}"></script>
 
+  <!-- lz-string local para compresión de señales WebRTC 100% Offline -->
+  <script src="{% static 'vendor/lz-string.min.js' %}"></script>
+
+
   <style>
     :root {
       --paper-note: #F4F1EA;
@@ -166,12 +170,28 @@
       </div>
 
       <!-- Título y subtítulo -->
-      <div class="text-center mt-2 mb-6">
+      <div class="text-center mt-2 mb-4">
         <h1 class="text-3xl font-bold text-[#0E2A5C]">Compartidor Relámpago</h1>
         <p class="text-base text-[#333333] mt-1">
-          Arrastra la foto o el PDF. <span class="bg-[#FFFFA5] px-1">Cero gasto de megas.</span>
+          Pasa el apunte directo. <span class="bg-[#FFFFA5] px-1 font-bold">Cero internet, cero datos.</span>
         </p>
       </div>
+
+      <!-- Selector de Modo de Conexión (Estilo Boceto Escolar) -->
+      <div class="flex flex-col items-center justify-center mb-5">
+        <div class="flex items-center justify-center gap-2">
+          <button id="modeDirectBtn" type="button" class="px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#FFFFA5] text-[#0E2A5C] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all">
+            📷 Modo Offline Puro (QR a QR)
+          </button>
+          <button id="modeLanBtn" type="button" class="px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#F4F1EA] text-[#333333] hover:bg-[#FFFFA5] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all">
+            📶 Modo Aula (Misma Wi-Fi)
+          </button>
+        </div>
+        <p id="modeDescription" class="text-[11px] font-mono-tech text-[#333333] text-center mt-1.5 px-2">
+          🎒 Celular a celular directo vía QR. Cero router, cero servidor, cero internet.
+        </p>
+      </div>
+
 
       <!-- Zona de carga (Drag and drop) -->
       <div id="dropzone" class="dropzone-sketch p-8 text-center cursor-pointer flex flex-col items-center justify-center">
@@ -197,9 +217,9 @@
           <p class="text-base font-bold mb-3 text-[#0E2A5C]">Escanea para descargar directo:</p>
           
           <!-- Recuadro blanco de notas centrado estrictamente vertical -->
-          <div class="bg-white p-4 border-2 border-[#333333] rounded-[16px] shadow-[4px_4px_0px_#333333] flex flex-col items-center justify-center w-full max-w-[240px]">
-            <!-- Canvas contenedor con dimensiones fijas (máx 180x180 px) y margen interno limpio (quiet zone) -->
-            <div id="qrcode" class="w-[180px] h-[180px] max-w-[180px] max-h-[180px] flex items-center justify-center bg-white p-2 box-border overflow-hidden">
+          <div class="bg-white p-4 border-2 border-[#333333] rounded-[16px] shadow-[4px_4px_0px_#333333] flex flex-col items-center justify-center w-full max-w-[260px]">
+            <!-- Canvas contenedor con dimensiones adaptables (200x200 px) y margen interno limpio (quiet zone) -->
+            <div id="qrcode" class="w-[200px] h-[200px] max-w-[200px] max-h-[200px] flex items-center justify-center bg-white p-1 box-border overflow-hidden">
               <span class="text-xs font-mono-tech text-[#333333]">Generando QR...</span>
             </div>
 
@@ -209,8 +229,19 @@
             </div>
           </div>
 
-          <!-- Configuración / visualización de IP en red local para QR -->
-          <div id="hostConfigArea" class="mt-3 text-xs font-mono-tech text-[#333333] flex flex-col items-center gap-1">
+          <!-- Enlace/Botón para Modo Directo: Escanear Respuesta del Receptor -->
+          <div id="directScanResponseArea" class="mt-3 hidden flex-col items-center">
+            <button id="scanResponseBtn" type="button" class="bg-[#FFFFA5] hover:bg-[#FFFFA5]/80 text-[#0E2A5C] border-2 border-[#333333] font-bold px-3 py-1.5 rounded-lg text-xs font-mono-tech shadow-[2px_2px_0px_#333333] active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-[#D12828]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+              </svg>
+              <span>📷 Escanear QR de Respuesta del Compañero</span>
+            </button>
+            <p class="text-[10px] font-mono-tech text-[#333333] mt-1">Una vez que tu compañero escanee tu QR arriba, escanea su QR de respuesta aquí.</p>
+          </div>
+
+          <!-- Configuración / visualización de IP en red local para QR (Modo LAN) -->
+          <div id="hostConfigArea" class="mt-3 hidden text-xs font-mono-tech text-[#333333] flex flex-col items-center gap-1">
             <div class="flex items-center gap-1">
               <span>URL:</span>
               <span id="qrUrlDisplay" class="font-bold text-[#0E2A5C] break-all text-[11px]"></span>
@@ -219,6 +250,8 @@
               ✏️ Ajustar IP Local para el QR
             </button>
           </div>
+
+
 
           <!-- Estado de conexión -->
           <div class="flex items-center gap-2 text-xs font-mono-tech text-[#333333] mt-3">
@@ -334,9 +367,17 @@
     const manualRoomInput = document.getElementById('manualRoomInput');
     const leaveRoomBtn = document.getElementById('leaveRoomBtn');
     
+    const modeLanBtn = document.getElementById('modeLanBtn');
+    const modeDirectBtn = document.getElementById('modeDirectBtn');
+    const modeDescription = document.getElementById('modeDescription');
+    const directScanResponseArea = document.getElementById('directScanResponseArea');
+    const scanResponseBtn = document.getElementById('scanResponseBtn');
+    
+    // Modo de conexión: 'direct' (offline puro QR a QR) o 'lan' (vía servidor Django en Wi-Fi)
+    let connectionMode = 'direct';
+
     // Configuración WebRTC Híbrida:
-    // Incluye STUN para cuando haya internet, mientras que en red local offline
-    // Django resuelve automáticamente los hostnames mDNS .local a las IPs de la red local.
+    // En modo LAN incluye STUN cuando haya internet; en modo directo offline usamos iceServers vacíos.
     const rtcConfig = {
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
@@ -349,10 +390,113 @@
 
     let html5QrCode = null;
     let isScanning = false;
+    let scanMode = 'join'; // 'join' o 'answer'
     let pollingInterval = null;
     let hasRemoteDescription = false;
     const handledCandidates = new Set();
     const queuedCandidates = [];
+
+    // Empaquetado y Desempaquetado Ultra-Compacto de SDP para Códigos QR
+    function packSdp(sdpObject) {
+      try {
+        const payload = { type: sdpObject.type, sdp: sdpObject.sdp };
+        const json = JSON.stringify(payload);
+        const comp = LZString.compressToEncodedURIComponent(json);
+        return 'SDP:' + comp;
+      } catch (e) {
+        console.error('Error empaquetando SDP:', e);
+        return null;
+      }
+    }
+
+    function unpackSdp(text) {
+      if (!text || !text.startsWith('SDP:')) return null;
+      try {
+        const raw = text.substring(4);
+        const json = LZString.decompressFromEncodedURIComponent(raw);
+        return JSON.parse(json);
+      } catch (e) {
+        console.error('Error desempaquetando SDP:', e);
+        return null;
+      }
+    }
+
+    // Manejo de pestañas de modo
+    function setConnectionMode(mode) {
+      connectionMode = mode;
+      if (mode === 'lan') {
+        modeLanBtn.className = 'px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#FFFFA5] text-[#0E2A5C] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all';
+        modeDirectBtn.className = 'px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#F4F1EA] text-[#333333] hover:bg-[#FFFFA5] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all';
+        if (directScanResponseArea) directScanResponseArea.classList.add('hidden');
+        if (hostConfigArea) hostConfigArea.classList.remove('hidden');
+        if (modeDescription) {
+          modeDescription.innerText = '📶 Modo Aula: Ambos en la misma Wi-Fi o Hotspot con el servidor Django.';
+        }
+      } else {
+        modeDirectBtn.className = 'px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#FFFFA5] text-[#0E2A5C] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all';
+        modeLanBtn.className = 'px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#F4F1EA] text-[#333333] hover:bg-[#FFFFA5] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all';
+        if (hostConfigArea) hostConfigArea.classList.add('hidden');
+        if (modeDescription) {
+          modeDescription.innerText = '🎒 Celular a celular directo vía QR. Cero router, cero servidor, cero internet.';
+        }
+      }
+    }
+
+    if (modeLanBtn) modeLanBtn.addEventListener('click', () => setConnectionMode('lan'));
+    if (modeDirectBtn) modeDirectBtn.addEventListener('click', () => setConnectionMode('direct'));
+
+    // Esperar a que la recolección de candidatos ICE termine para incluir todos los candidatos en el SDP
+    function waitForIceGathering(pc) {
+      return new Promise((resolve) => {
+        if (pc.iceGatheringState === 'complete') {
+          resolve();
+          return;
+        }
+        const timeout = setTimeout(() => {
+          resolve();
+        }, 1200);
+
+        const onStateChange = () => {
+          if (pc.iceGatheringState === 'complete') {
+            clearTimeout(timeout);
+            pc.removeEventListener('icegatheringstatechange', onStateChange);
+            resolve();
+          }
+        };
+        pc.addEventListener('icegatheringstatechange', onStateChange);
+      });
+    }
+
+    // Configurar escuchadores de estado unificados para PeerConnection
+    function setupPeerConnectionStatusEvents(pc) {
+      pc.oniceconnectionstatechange = () => {
+        console.log('ICE State:', pc.iceConnectionState);
+        const statusEl = document.getElementById('transferStatus');
+        if (!statusEl) return;
+        const state = pc.iceConnectionState;
+        if (state === 'checking') {
+          statusEl.innerText = 'Negociando enlace P2P directo...';
+          statusEl.className = 'text-[#0000FF] font-bold';
+        } else if (state === 'connected' || state === 'completed') {
+          statusEl.innerText = 'Conectado P2P - Listo para transferir';
+          statusEl.className = 'text-[#1E3F20] bg-[#FFFFA5] px-2.5 py-1 border-2 border-[#333333] rounded font-bold shadow-[2px_2px_0px_#333333] inline-block';
+        } else if (state === 'failed') {
+          statusEl.innerText = 'Fallo de enlace P2P. Verifica estar conectados a la misma Wi-Fi/Hotspot.';
+          statusEl.className = 'text-[#D12828] font-bold';
+        }
+      };
+
+      pc.onconnectionstatechange = () => {
+        console.log('Connection State:', pc.connectionState);
+        if (pc.connectionState === 'connected') {
+          const statusEl = document.getElementById('transferStatus');
+          if (statusEl && !statusEl.innerText.includes('Transfiriendo') && !statusEl.innerText.includes('Recibiendo') && !statusEl.innerText.includes('completad')) {
+            statusEl.innerText = 'Conectado P2P - Listo para transferir';
+            statusEl.className = 'text-[#1E3F20] bg-[#FFFFA5] px-2.5 py-1 border-2 border-[#333333] rounded font-bold shadow-[2px_2px_0px_#333333] inline-block';
+          }
+        }
+      };
+    }
 
     // 1. Obtención de Host para Red Local (evita problemas con localhost en el QR)
     function getEffectiveHost() {
@@ -367,23 +511,24 @@
       return `${window.location.protocol}//${host}/?join=${roomId}`;
     }
 
-    function renderQR(roomId) {
-      const joinUrl = buildJoinUrl(roomId);
+    function renderQR(content, isDirect = false, label = '') {
       const qrUrlDisplay = document.getElementById('qrUrlDisplay');
-      if (qrUrlDisplay) qrUrlDisplay.innerText = joinUrl;
+      if (qrUrlDisplay) {
+        qrUrlDisplay.innerText = isDirect ? 'P2P Offline (Datos comprimidos)' : buildJoinUrl(content);
+      }
 
       qrcodeContainer.innerHTML = '';
       new QRCode(qrcodeContainer, {
-        text: joinUrl,
-        width: 160,
-        height: 160,
+        text: isDirect ? content : buildJoinUrl(content),
+        width: isDirect ? 200 : 160,
+        height: isDirect ? 200 : 160,
         colorDark: "#0E2A5C",
         colorLight: "#FFFFFF",
-        correctLevel: QRCode.CorrectLevel.M
+        correctLevel: isDirect ? QRCode.CorrectLevel.L : QRCode.CorrectLevel.M
       });
 
       const roomIdText = document.getElementById('roomIdText');
-      if (roomIdText) roomIdText.innerText = roomId;
+      if (roomIdText) roomIdText.innerText = label || content;
     }
 
     if (changeHostBtn) {
@@ -396,7 +541,7 @@
         if (input && input.trim()) {
           localStorage.setItem('sindatos_lan_host', input.trim());
           if (window.currentRoomId) {
-            renderQR(window.currentRoomId);
+            renderQR(window.currentRoomId, false, window.currentRoomId);
           }
         }
       });
@@ -422,9 +567,46 @@
       window.selectedFile = file;
       transferArea.classList.remove('hidden');
       transferArea.classList.add('flex');
+      if (dropzone) dropzone.classList.add('hidden');
       if (scanBtn) scanBtn.classList.add('hidden');
       
       const statusEl = document.getElementById('transferStatus');
+
+      if (connectionMode === 'direct') {
+        if (hostConfigArea) hostConfigArea.classList.add('hidden');
+        if (directScanResponseArea) directScanResponseArea.classList.remove('hidden');
+
+        statusEl.innerText = 'Generando QR de oferta offline...';
+        statusEl.className = 'text-[#0E2A5C] font-bold';
+
+        if (window.peerConnection) window.peerConnection.close();
+        window.peerConnection = new RTCPeerConnection({ iceServers: [] });
+        setupPeerConnectionStatusEvents(window.peerConnection);
+
+        window.dataChannel = window.peerConnection.createDataChannel('fileTransfer');
+        setupDataChannel(window.dataChannel, true);
+
+        const offer = await window.peerConnection.createOffer();
+        await window.peerConnection.setLocalDescription(offer);
+
+        // Esperar a que la recolección de candidatos ICE concluya para incluirlos en el QR
+        await waitForIceGathering(window.peerConnection);
+
+        const packedOffer = packSdp(window.peerConnection.localDescription);
+        renderQR(packedOffer, true, '1. QR OFERTA');
+
+        statusEl.innerHTML = `
+          <div class="flex flex-col items-center gap-1 text-center">
+            <span class="text-[#0E2A5C] font-bold">1. Pídele al receptor que escanee este QR.</span>
+            <span class="text-[11px] text-[#333333]">2. Luego pulsa el botón amarillo abajo para escanear su respuesta.</span>
+          </div>
+        `;
+        return;
+      }
+
+      // Modo LAN (Misma Wi-Fi con servidor Django)
+      if (directScanResponseArea) directScanResponseArea.classList.add('hidden');
+      if (hostConfigArea) hostConfigArea.classList.remove('hidden');
       statusEl.innerText = 'Creando sala...';
       statusEl.className = 'text-[#D12828] font-bold';
 
@@ -437,39 +619,12 @@
           window.serverHost = data.server_host;
         }
 
-        renderQR(roomId);
+        renderQR(roomId, false, roomId);
         statusEl.innerText = 'Esperando que el compañero escanee...';
 
         if (window.peerConnection) window.peerConnection.close();
         window.peerConnection = new RTCPeerConnection(rtcConfig);
-
-        window.peerConnection.oniceconnectionstatechange = () => {
-          console.log('Emisor ICE State:', window.peerConnection.iceConnectionState);
-          const statusEl = document.getElementById('transferStatus');
-          if (!statusEl) return;
-          const state = window.peerConnection.iceConnectionState;
-          if (state === 'checking') {
-            statusEl.innerText = 'Negociando enlace P2P en red local...';
-            statusEl.className = 'text-[#0000FF] font-bold';
-          } else if (state === 'connected' || state === 'completed') {
-            statusEl.innerText = 'Conectado P2P - Listo para transferir';
-            statusEl.className = 'text-[#1E3F20] bg-[#FFFFA5] px-2.5 py-1 border-2 border-[#333333] rounded font-bold shadow-[2px_2px_0px_#333333] inline-block';
-          } else if (state === 'failed') {
-            statusEl.innerText = 'Fallo de enlace P2P. Verifica estar en la misma Wi-Fi.';
-            statusEl.className = 'text-[#D12828] font-bold';
-          }
-        };
-
-        window.peerConnection.onconnectionstatechange = () => {
-          console.log('Emisor Connection State:', window.peerConnection.connectionState);
-          if (window.peerConnection.connectionState === 'connected') {
-            const statusEl = document.getElementById('transferStatus');
-            if (statusEl && !statusEl.innerText.includes('Transfiriendo') && !statusEl.innerText.includes('completad')) {
-              statusEl.innerText = 'Conectado P2P - Listo para transferir';
-              statusEl.className = 'text-[#1E3F20] bg-[#FFFFA5] px-2.5 py-1 border-2 border-[#333333] rounded font-bold shadow-[2px_2px_0px_#333333] inline-block';
-            }
-          }
-        };
+        setupPeerConnectionStatusEvents(window.peerConnection);
 
         window.dataChannel = window.peerConnection.createDataChannel('fileTransfer');
         setupDataChannel(window.dataChannel, true);
@@ -823,7 +978,63 @@
       }
     }
 
-    // 8. Flujo Receptor (?join=ROOM_ID o al escanear QR)
+    // 8. Flujo Receptor Directo Offline (QR a QR)
+    async function initDirectReceiver(offerSdp) {
+      connectionMode = 'direct';
+      const dropzone = document.getElementById('dropzone');
+      const transferArea = document.getElementById('transferArea');
+      const statusEl = document.getElementById('transferStatus');
+      const hostConfigArea = document.getElementById('hostConfigArea');
+      const scanBtn = document.getElementById('scanBtn');
+      const directScanResponseArea = document.getElementById('directScanResponseArea');
+
+      if (dropzone) dropzone.classList.add('hidden');
+      if (scanBtn) scanBtn.classList.add('hidden');
+      if (hostConfigArea) hostConfigArea.classList.add('hidden');
+      if (directScanResponseArea) directScanResponseArea.classList.add('hidden');
+      if (transferArea) {
+        transferArea.classList.remove('hidden');
+        transferArea.classList.add('flex');
+      }
+
+      statusEl.innerText = 'Generando QR de respuesta...';
+      statusEl.className = 'text-[#0E2A5C] font-bold';
+
+      if (window.peerConnection) window.peerConnection.close();
+      window.peerConnection = new RTCPeerConnection({ iceServers: [] });
+      setupPeerConnectionStatusEvents(window.peerConnection);
+
+      window.peerConnection.ondatachannel = (e) => {
+        console.log('DataChannel directo recibido en Receptor:', e.channel);
+        window.dataChannel = e.channel;
+        setupDataChannel(window.dataChannel, false);
+      };
+
+      try {
+        await window.peerConnection.setRemoteDescription(new RTCSessionDescription(offerSdp));
+        const answer = await window.peerConnection.createAnswer();
+        await window.peerConnection.setLocalDescription(answer);
+
+        // Esperar recolección de candidatos locales
+        await waitForIceGathering(window.peerConnection);
+
+        const packedAnswer = packSdp(window.peerConnection.localDescription);
+        renderQR(packedAnswer, true, '2. QR RESPUESTA');
+
+        statusEl.innerHTML = `
+          <div class="bg-[#FFFFA5] border-2 border-[#333333] p-2.5 rounded-lg shadow-[2px_2px_0px_#333333] text-center w-full">
+            <p class="text-sm font-bold text-[#0E2A5C]">¡Paso 2: Muestra este QR a tu compañero!</p>
+            <p class="text-xs text-[#333333] mt-0.5">El emisor debe tocar su botón amarillo para escanear esta pantalla.</p>
+          </div>
+        `;
+      } catch (err) {
+        console.error('Error al responder en modo directo:', err);
+        statusEl.innerText = 'Error al generar respuesta P2P: ' + err.message;
+        statusEl.className = 'text-[#D12828] font-bold';
+      }
+    }
+
+    // 9. Flujo Receptor LAN (?join=ROOM_ID o al escanear QR)
     async function initReceiver(roomId) {
       roomId = roomId.trim().toUpperCase();
       window.currentRoomId = roomId;
@@ -833,15 +1044,17 @@
       const roomIdText = document.getElementById('roomIdText');
       const hostConfigArea = document.getElementById('hostConfigArea');
       const scanBtn = document.getElementById('scanBtn');
+      const directScanResponseArea = document.getElementById('directScanResponseArea');
 
       if (dropzone) dropzone.classList.add('hidden');
       if (scanBtn) scanBtn.classList.add('hidden');
+      if (hostConfigArea) hostConfigArea.classList.add('hidden');
+      if (directScanResponseArea) directScanResponseArea.classList.add('hidden');
       if (transferArea) {
         transferArea.classList.remove('hidden');
         transferArea.classList.add('flex');
       }
       if (roomIdText) roomIdText.innerText = roomId;
-      if (hostConfigArea) hostConfigArea.classList.add('hidden');
 
       qrcodeContainer.innerHTML = `
         <div class="flex flex-col items-center justify-center p-2 text-center">
@@ -858,34 +1071,7 @@
 
       if (window.peerConnection) window.peerConnection.close();
       window.peerConnection = new RTCPeerConnection(rtcConfig);
-
-      window.peerConnection.oniceconnectionstatechange = () => {
-        console.log('Receptor ICE State:', window.peerConnection.iceConnectionState);
-        const statusEl = document.getElementById('transferStatus');
-        if (!statusEl) return;
-        const state = window.peerConnection.iceConnectionState;
-        if (state === 'checking') {
-          statusEl.innerText = 'Negociando enlace P2P en red local...';
-          statusEl.className = 'text-[#0000FF] font-bold';
-        } else if (state === 'connected' || state === 'completed') {
-          statusEl.innerText = 'Conectado P2P - Listo para transferir';
-          statusEl.className = 'text-[#1E3F20] bg-[#FFFFA5] px-2.5 py-1 border-2 border-[#333333] rounded font-bold shadow-[2px_2px_0px_#333333] inline-block';
-        } else if (state === 'failed') {
-          statusEl.innerText = 'Fallo de enlace P2P. Verifica estar en la misma Wi-Fi.';
-          statusEl.className = 'text-[#D12828] font-bold';
-        }
-      };
-
-      window.peerConnection.onconnectionstatechange = () => {
-        console.log('Receptor Connection State:', window.peerConnection.connectionState);
-        if (window.peerConnection.connectionState === 'connected') {
-          const statusEl = document.getElementById('transferStatus');
-          if (statusEl && !statusEl.innerText.includes('Recibiendo') && !statusEl.innerText.includes('completad')) {
-            statusEl.innerText = 'Conectado P2P - Listo para transferir';
-            statusEl.className = 'text-[#1E3F20] bg-[#FFFFA5] px-2.5 py-1 border-2 border-[#333333] rounded font-bold shadow-[2px_2px_0px_#333333] inline-block';
-          }
-        }
-      };
+      setupPeerConnectionStatusEvents(window.peerConnection);
 
       window.peerConnection.ondatachannel = (e) => {
         console.log('DataChannel recibido en Receptor:', e.channel);
@@ -911,7 +1097,7 @@
       startPolling(roomId, 'answerer');
     }
 
-    // 7. Extracción de Room ID y Escaneo con Cámara
+    // 10. Extracción de Room ID y Escaneo con Cámara
     function extractRoomId(text) {
       if (!text) return null;
       try {
@@ -932,9 +1118,43 @@
 
     async function onScanSuccess(decodedText) {
       console.log("QR escaneado:", decodedText);
-      const roomId = extractRoomId(decodedText);
       await stopScanner();
 
+      // 1. ¿Es un WebRTC SDP empaquetado (Modo Offline Directo)?
+      if (decodedText.startsWith('SDP:')) {
+        const sdpData = unpackSdp(decodedText);
+        if (!sdpData || !sdpData.type || !sdpData.sdp) {
+          alert("Error: código QR WebRTC no legible o corrupto.");
+          return;
+        }
+
+        if (sdpData.type === 'offer') {
+          // El receptor escaneó la oferta del emisor
+          await initDirectReceiver(sdpData);
+          return;
+        } else if (sdpData.type === 'answer') {
+          // El emisor escaneó la respuesta del receptor
+          if (!window.peerConnection) {
+            alert("No hay conexión activa. Selecciona primero un archivo para enviar.");
+            return;
+          }
+          try {
+            await window.peerConnection.setRemoteDescription(new RTCSessionDescription(sdpData));
+            const statusEl = document.getElementById('transferStatus');
+            if (statusEl) {
+              statusEl.innerText = '¡Respuesta recibida! Conectando P2P directo...';
+              statusEl.className = 'text-[#0000FF] font-bold';
+            }
+          } catch (err) {
+            console.error("Error aplicando respuesta remota:", err);
+            alert("Error al aplicar respuesta: " + err.message);
+          }
+          return;
+        }
+      }
+
+      // 2. Modo LAN / Servidor Django
+      const roomId = extractRoomId(decodedText);
       if (roomId) {
         const newUrl = `${window.location.protocol}//${window.location.host}/?join=${roomId}`;
         window.history.pushState({ path: newUrl }, '', newUrl);
@@ -998,6 +1218,14 @@
 
     if (scanBtn) {
       scanBtn.addEventListener('click', () => {
+        scanMode = 'join';
+        startScanner();
+      });
+    }
+
+    if (scanResponseBtn) {
+      scanResponseBtn.addEventListener('click', () => {
+        scanMode = 'answer';
         startScanner();
       });
     }
@@ -1032,7 +1260,7 @@
       });
     }
 
-    // 8. Función para Salir de la Sala / Reiniciar a la pantalla principal
+    // 11. Función para Salir de la Sala / Reiniciar a la pantalla principal
     function leaveRoom() {
       // Detener sondeo de señalización
       if (pollingInterval) {
@@ -1067,6 +1295,7 @@
       const transferAreaEl = document.getElementById('transferArea');
       const scanBtnEl = document.getElementById('scanBtn');
       const hostConfigAreaEl = document.getElementById('hostConfigArea');
+      const directScanResponseAreaEl = document.getElementById('directScanResponseArea');
       const fileInputEl = document.getElementById('fileInput');
       const statusEl = document.getElementById('transferStatus');
 
@@ -1075,9 +1304,18 @@
         transferAreaEl.classList.add('hidden');
         transferAreaEl.classList.remove('flex');
       }
+      if (directScanResponseAreaEl) {
+        directScanResponseAreaEl.classList.add('hidden');
+      }
       if (dropzoneEl) dropzoneEl.classList.remove('hidden');
       if (scanBtnEl) scanBtnEl.classList.remove('hidden');
-      if (hostConfigAreaEl) hostConfigAreaEl.classList.remove('hidden');
+      if (hostConfigAreaEl) {
+        if (connectionMode === 'lan') {
+          hostConfigAreaEl.classList.remove('hidden');
+        } else {
+          hostConfigAreaEl.classList.add('hidden');
+        }
+      }
 
       if (statusEl) {
         statusEl.innerText = 'Esperando que el compañero escanee...';

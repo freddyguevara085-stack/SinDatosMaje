@@ -1,18 +1,19 @@
-const CACHE_NAME = 'sindatos-shell-v3';
+const CACHE_NAME = 'sindatos-shell-v4';
 const SHELL_ASSETS = [
-
   '/',
   '/manifest.json',
   '/static/css/fonts.css',
   '/static/vendor/tailwind.js',
   '/static/vendor/qrcode.min.js',
   '/static/vendor/html5-qrcode.min.js',
+  '/static/vendor/lz-string.min.js',
   '/static/icons/icon-192.png',
   '/static/icons/icon-512.png',
   '/static/icons/favicon.png',
   '/static/icons/logo.png',
   '/static/icons/icon.svg'
 ];
+
 
 
 // Instalación: Pre-cachear todo el App Shell
