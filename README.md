@@ -33,14 +33,14 @@ En muchas aulas de Latinoamérica el internet es lento, inestable o simplemente 
 
 SinDatosMaje cuenta con dos modalidades para adaptarse a cualquier situación en el aula:
 
-1. **📷 Modo Offline Puro (QR a QR — Celular a Celular):**
+1. **Modo Offline Puro (QR a QR — Celular a Celular):**
    - **Cero laptop, cero servidor, cero internet.**
    - Dos celulares con la PWA instalada conectados a la misma red Wi-Fi o Hotspot móvil (¡sin datos!).
    - El emisor genera un QR de oferta WebRTC comprimido con `lz-string`.
    - El receptor lo escanea con su cámara y genera un QR de respuesta en su pantalla.
    - El emisor escanea la respuesta del receptor y la transferencia P2P inicia de inmediato a velocidad Wi-Fi local.
 
-2. **📶 Modo Aula (Misma Wi-Fi con Servidor Django):**
+2. **Modo Aula (Misma Wi-Fi con Servidor Django):**
    - El profesor o un alumno corre la app en su laptop.
    - Los alumnos en la misma red escanean el QR o ingresan el código de sala de 6 letras.
    - Conexión asistida automática con un solo escaneo.

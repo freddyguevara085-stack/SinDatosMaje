@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sindatos-shell-v4';
+const CACHE_NAME = 'sindatos-shell-v5';
 const SHELL_ASSETS = [
   '/',
   '/manifest.json',
@@ -14,13 +14,11 @@ const SHELL_ASSETS = [
   '/static/icons/icon.svg'
 ];
 
-
-
 // Instalación: Pre-cachear todo el App Shell
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Pre-cacheados recursos del App Shell');
+      console.log('[SW] Pre-cacheados recursos del App Shell v5');
       return cache.addAll(SHELL_ASSETS);
     }).then(() => self.skipWaiting())
   );
@@ -42,7 +40,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Estrategia Cache-First para el App Shell (con excepción total para /api/)
+// Estrategia: Network-First para páginas HTML (App Shell dinámico), Cache-First para estáticos
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
@@ -52,7 +50,23 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Cache-First con fallback a Red para archivos estáticos y páginas HTML
+  // 2. Navegación HTML (páginas): Network-First con fallback a Caché offline
+  if (event.request.mode === 'navigate' || url.pathname === '/') {
+    event.respondWith(
+      fetch(event.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+        }
+        return networkResponse;
+      }).catch(() => {
+        return caches.match('/') || caches.match(event.request);
+      })
+    );
+    return;
+  }
+
+  // 3. Recursos estáticos (JS, CSS, Fuentes, Iconos): Cache-First con fallback a Red
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
@@ -61,15 +75,9 @@ self.addEventListener('fetch', (event) => {
       return fetch(event.request).then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
           const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
         }
         return networkResponse;
-      }).catch(() => {
-        if (event.request.mode === 'navigate') {
-          return caches.match('/');
-        }
       });
     })
   );

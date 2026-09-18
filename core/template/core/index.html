@@ -573,8 +573,11 @@
           <p class="text-xs text-[#333333] mt-1.5 leading-relaxed">
             Por estrictas políticas de seguridad móvil, Chrome y Safari bloquean el acceso a la cámara si la página no usa HTTPS (a excepción de <code class="font-mono-tech bg-[#F4F1EA] px-1 rounded">localhost</code>). Si estás conectado por la IP local del profesor (ej. <code class="font-mono-tech bg-[#F4F1EA] px-1 rounded">http://192.168.1.50:8000</code>), <strong>la cámara se bloqueará</strong>.
           </p>
-          <div class="mt-2 bg-[#FFFFA5] border border-[#333333] p-2 rounded text-xs font-mono-tech text-[#0E2A5C]">
-            <strong>Solución:</strong> En Modo Aula no necesitas la cámara. Simplemente introduce el código de sala de 6 letras en el modal y pulsa <strong>Unirse</strong>.
+          <div class="mt-2 bg-[#FFFFA5] border border-[#333333] p-2 rounded text-xs font-mono-tech text-[#0E2A5C] flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-[#0E2A5C] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+            </svg>
+            <span><strong>Solución:</strong> En Modo Aula no necesitas la cámara. Simplemente introduce el código de sala de 6 letras en el modal y pulsa <strong>Unirse</strong>.</span>
           </div>
         </div>
 
@@ -632,8 +635,11 @@
     <div class="sketch-card p-6 relative max-w-sm w-full bg-[#FFFFFF] border-2 border-[#333333] shadow-[6px_6px_0px_#333333] flex flex-col items-center">
       
       <!-- Botón de cerrar estilo cinta adhesiva (Washi Tape) -->
-      <button id="closeScannerBtn" type="button" class="washi-tape absolute -top-3 right-4 px-3 py-1 text-xs font-mono-tech text-[#D12828] font-bold hover:bg-[#FFFFA5] transition-all cursor-pointer">
-        ✕ CERRAR CÁMARA
+      <button id="closeScannerBtn" type="button" class="washi-tape absolute -top-3 right-4 px-3 py-1 text-xs font-mono-tech text-[#D12828] font-bold hover:bg-[#FFFFA5] transition-all cursor-pointer flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5 text-[#D12828]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        <span>CERRAR CÁMARA</span>
       </button>
 
       <!-- Encabezado del modal -->
@@ -648,8 +654,11 @@
       </div>
 
       <!-- Advertencia amigable de bloqueo de cámara por red local HTTP -->
-      <div class="mt-2.5 w-full text-center text-xs font-mono-tech text-[#D12828] bg-[#FFFFA5] px-2.5 py-1.5 border border-[#333333] rounded shadow-[2px_2px_0px_#333333]">
-        ¿Pantalla negra? Escribe el código manual (la red local HTTP bloquea la cámara).
+      <div class="mt-2.5 w-full text-center text-xs font-mono-tech text-[#D12828] bg-[#FFFFA5] px-2.5 py-1.5 border border-[#333333] rounded shadow-[2px_2px_0px_#333333] flex items-center justify-center gap-1.5">
+        <svg class="w-4 h-4 text-[#D12828] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+        <span>¿Pantalla negra? Escribe el código manual (la red local HTTP bloquea la cámara).</span>
       </div>
 
       <!-- Alternativa manual con entrada de código de sala -->
@@ -657,8 +666,11 @@
         <p class="text-xs font-mono-tech text-[#333333] mb-2">O escribe el código de 6 caracteres:</p>
         <div class="flex gap-2 justify-center">
           <input id="manualRoomInput" type="text" maxlength="6" placeholder="EJ: AB12CD" class="font-mono-tech uppercase text-center border-2 border-[#333333] rounded px-3 py-1 text-sm bg-[#F4F1EA] text-[#0E2A5C] focus:outline-none focus:bg-white w-32 shadow-[2px_2px_0px_#333333]">
-          <button id="manualJoinBtn" type="button" class="bg-[#FFFFA5] hover:bg-[#FFFFA5]/80 text-[#333333] border-2 border-[#333333] font-bold px-3 py-1 rounded text-sm shadow-[2px_2px_0px_#333333] active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer">
-            Unirse
+          <button id="manualJoinBtn" type="button" class="bg-[#FFFFA5] hover:bg-[#FFFFA5]/80 text-[#333333] border-2 border-[#333333] font-bold px-3 py-1 rounded text-sm shadow-[2px_2px_0px_#333333] active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-[#0E2A5C]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+            </svg>
+            <span>Unirse</span>
           </button>
         </div>
       </div>
@@ -1748,6 +1760,7 @@
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(reg => {
           console.log('PWA Service Worker registrado con éxito en scope:', reg.scope);
+          reg.update();
         }).catch(err => {
           console.error('Error al registrar Service Worker:', err);
         });
