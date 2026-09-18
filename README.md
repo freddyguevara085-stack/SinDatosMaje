@@ -1,131 +1,191 @@
-# 📝 SinDatosMaje
+<div align="center">
 
-> **Transferencia de archivos directa P2P para el aula sin internet y con cero consumo de datos.**
+# SinDatosMaje
 
-**SinDatosMaje** es una Progressive Web App (PWA) diseñada para escuelas y universidades donde el acceso a internet es limitado, inestable o inexistente. Permite a docentes y estudiantes compartir fotos de apuntes, documentos PDF y archivos directamente entre laptops y teléfonos móviles a través de la red Wi-Fi local o un punto de acceso (hotspot), sin consumir un solo mega de datos móviles y sin que los archivos pasen por ningún servidor externo.
+**Transferencia de archivos P2P para el aula — sin internet, sin datos, sin excusas.**
 
----
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://python.org)
+[![Django](https://img.shields.io/badge/Django-5%2B-092E20?logo=django&logoColor=white)](https://djangoproject.com)
+[![WebRTC](https://img.shields.io/badge/WebRTC-P2P-333333?logo=webrtc&logoColor=white)](https://webrtc.org)
+[![PWA](https://img.shields.io/badge/PWA-Instalable-5A0FC8?logo=pwa&logoColor=white)](#instalación-como-app)
+[![License: MIT](https://img.shields.io/badge/Licencia-MIT-yellow.svg)](LICENSE)
 
-## 🚀 Características Principales
-
-* 📶 **100% Offline en Red Local (LAN):** No requiere internet. Funciona conectado a cualquier router Wi-Fi o al punto de acceso (zona Wi-Fi) de un celular sin plan de datos.
-* ⚡ **Transferencia Par a Par (P2P con WebRTC):** Los dispositivos se conectan directamente mediante RTCDataChannel. Las transferencias aprovechan la velocidad completa de la red Wi-Fi local (50 - 300 Mbps).
-* 🔒 **Privacidad Total:** Los archivos **nunca se suben al servidor** ni tocan internet. La laptop solo actúa como intermediario de señalización inicial (handshake) y proveedor del App Shell.
-* 📱 **PWA Instalable:** Cuenta con Service Worker con estrategia *Cache-First* y manifest.json. Se puede instalar como aplicación nativa en Android, iOS o Windows.
-* 📦 **Cero Dependencias de CDNs:** Todos los recursos (Tailwind CSS, escáner de QR, generador de QR y fuentes) se sirven localmente desde el proyecto.
-* 🎨 **Estilo Sketch-Note (Libreta Escolar):** Interfaz visual orgánica con diseño de libreta rayada, trazos dibujados a mano, tipografía *Patrick Hand* y metadatos en *JetBrains Mono*.
+</div>
 
 ---
 
-## 🛠️ Arquitectura Técnica
+## El Problema
 
-`	ext
-[ Emisor (Laptop / Celular) ]                            [ Receptor (Celular / Laptop) ]
-           │                                                            │
-           │  1. Arrastra archivo -> POST /api/create-room/             │
-           ├──────────────────────────────┐                             │
-           │                              ▼                             │
-           │                     [ Servidor Django ]                    │
-           │                     (Señalización en RAM)                  │
-           │                              ▲                             │
-           │  2. Muestra QR con URL LAN   │  3. Escanea QR / Código     │
-           │     y oferta SDP inicial     │     y envía respuesta SDP   │
-           ├─────────────────────────────►│◄────────────────────────────┤
-           │                              │                             │
-           │  4. Enlace P2P establecido directamente vía Wi-Fi local    │
-           ▼════════════════════════════════════════════════════════════▼
-                    WebRTC RTCDataChannel (Chunks de 32 KB)
-                    Velocidad LAN directa - Cero uso de datos
-`
+En muchas aulas de Latinoamérica el internet es lento, inestable o simplemente no existe. Cuando un profesor necesita compartir un PDF, una foto de la pizarra o una presentación con 30 alumnos, las opciones habituales (WhatsApp, Google Drive, correo) **requieren datos móviles que la mayoría no tiene**.
 
-### Componentes Clave:
-1. **Señalización Ligera en Django (core/views.py):**
-   * Diccionario thread-safe en memoria con 	hreading.Lock().
-   * Normalización automática de códigos de sala en mayúsculas (ABCDEFGHJKLMNPQRSTUVWXYZ23456789) para evitar discrepancias al escribir en pantallas táctiles.
-   * Auto-descubrimiento de la IP local de la tarjeta de red (192.168.1.X).
-   * **Reescritura de mDNS .local:** En redes locales sin internet, los navegadores Chromium anonimizan las IPs bajo nombres .local que los móviles Android no pueden resolver. El backend traduce automáticamente estos nombres a la IP LAN real del emisor en los candidatos ICE y SDP.
-2. **Motor WebRTC en Cliente (core/template/core/index.html):**
-   * Fragmentación del archivo en trozos de 32 KB utilizando FileReader y ArrayBuffer.
-   * Control de saturación y memoria mediante ufferedAmountLowThreshold.
-   * Reensamblado reactivo y descarga automática/manual mediante Blob y URL.createObjectURL.
-3. **App Shell Offline (static/sw.js):**
-   * Service Worker con estrategia *Cache-First* para HTML, JS, CSS y fuentes locales.
-   * Exclusión estricta de rutas dinámicas de señalización (/api/*) para asegurar que el handshake siempre viaje en vivo.
+## La Solución
+
+**SinDatosMaje** convierte cualquier laptop en un servidor local de transferencia directa. Solo necesitas una red Wi-Fi (puede ser el hotspot de un celular **sin saldo ni internet**). El profesor suelta el archivo, los alumnos escanean un QR o escriben un código de 6 letras, y el archivo viaja **directo de dispositivo a dispositivo** por WebRTC sin tocar ningún servidor externo.
 
 ---
 
-## 📂 Estructura del Proyecto
+## Características
 
-`	ext
+| Característica | Detalle |
+|---|---|
+| **100% Offline** | Funciona en redes Wi-Fi sin acceso a internet |
+| **Transferencia P2P** | WebRTC `RTCDataChannel` — velocidad LAN completa (50–300 Mbps) |
+| **Privacidad total** | Los archivos nunca salen de la red local |
+| **PWA instalable** | Se instala como app nativa en Android, iOS y Windows |
+| **Sin CDNs externos** | Tailwind, fuentes y librerías empaquetadas localmente |
+| **UI Sketch-Note** | Interfaz estilo libreta escolar dibujada a mano |
+
+---
+
+## Arquitectura
+
+```
+Emisor (Laptop)                    Servidor Django                   Receptor (Celular)
+      │                           (solo señalización)                      │
+      │── 1. Suelta archivo ──────>│                                       │
+      │<─ 2. Room ID + QR ────────│                                       │
+      │── 3. Oferta SDP ─────────>│                                       │
+      │                            │<── 4. Escanea QR / código ────────────│
+      │                            │─── 5. Oferta SDP ───────────────────>│
+      │                            │<── 6. Respuesta SDP ─────────────────│
+      │<─ 7. Respuesta SDP ───────│                                       │
+      │                                                                    │
+      │═══════════ 8. Conexión P2P directa vía Wi-Fi local ═══════════════│
+      │──────────── Archivo en chunks de 32 KB ──────────────────────────>│
+      │                    (cero datos, cero internet)                     │
+```
+
+### Componentes Clave
+
+**Backend — [`core/views.py`](core/views.py)**
+- Almacén de salas en memoria thread-safe (`threading.Lock()`)
+- Auto-descubrimiento de IP local de la tarjeta de red
+- Reescritura automática de hostnames mDNS `.local` a IP LAN real
+- Códigos de sala en mayúsculas sin caracteres ambiguos (`0/O`, `1/I`)
+
+**Frontend — [`core/template/core/index.html`](core/template/core/index.html)**
+- Fragmentación de archivos en chunks de 32 KB con `FileReader`
+- Control de backpressure vía `bufferedAmountLowThreshold`
+- Reensamblado y descarga automática con `Blob` + `URL.createObjectURL`
+
+**PWA — [`static/sw.js`](static/sw.js)**
+- Service Worker con estrategia Cache-First para el App Shell
+- Bypass estricto de `/api/*` para señalización en vivo
+
+---
+
+## Estructura del Proyecto
+
+```
 SinDatosMaje/
-├── config/                  # Configuración del proyecto Django (settings, urls, wsgi)
-├── core/                    # Aplicación principal
-│   ├── template/core/       # Plantilla principal index.html (Sketch-Note UI)
-│   ├── views.py             # Señalización WebRTC, PWA handlers y vistas
-│   └── urls.py              # Rutas de señalización (/api/) y PWA (/sw.js, /manifest.json)
-├── static/                  # Recursos estáticos 100% locales (sin CDNs)
-│   ├── css/fonts.css        # Declaraciones @font-face locales
-│   ├── fonts/               # Archivos woff2 de Patrick Hand y JetBrains Mono
-│   ├── icons/               # Íconos PWA (SVG, 192x192 PNG, 512x512 PNG)
-│   ├── vendor/              # Librerías locales (tailwind.js, qrcode.min.js, html5-qrcode.min.js)
-│   ├── manifest.json        # Manifiesto Web de la PWA
-│   └── sw.js                # Service Worker con estrategia Cache-First
-├── manage.py                # Gestor de Django
+├── config/                    # Configuración Django (settings, urls, wsgi)
+├── core/
+│   ├── template/core/
+│   │   └── index.html         # Interfaz completa (HTML + JS + Sketch-Note CSS)
+│   ├── views.py               # Señalización WebRTC y handlers PWA
+│   └── urls.py                # Rutas /api/ y PWA
+├── static/
+│   ├── css/fonts.css          # @font-face locales (Patrick Hand, JetBrains Mono)
+│   ├── fonts/                 # 15 archivos .woff2
+│   ├── icons/                 # icon.svg, icon-192.png, icon-512.png
+│   ├── vendor/                # tailwind.js, qrcode.min.js, html5-qrcode.min.js
+│   ├── manifest.json          # Manifiesto PWA
+│   └── sw.js                  # Service Worker Cache-First
+├── manage.py
 └── README.md
-`
+```
 
 ---
 
-## 🚀 Guía de Inicio Rápido
+## Inicio Rápido
 
-### 1. Requisitos
-* Python 3.10 o superior.
-* Django 5 o superior (pip install django).
+### Requisitos
 
-### 2. Configuración y Ejecución
-1. Clona o descarga el repositorio:
-   `ash
-   git clone <url-del-repositorio>
-   cd SinDatosMaje
-   `
-2. Activa tu entorno virtual (si aplica):
-   `ash
-   # En Windows:
-   venv\Scripts\activate
-   # En Linux / macOS:
-   source venv/bin/activate
-   `
-3. Inicia el servidor escuchando en todas las interfaces de red local:
-   `ash
-   python manage.py runserver 0.0.0.0:8000
-   `
+- Python 3.10+
+- Django 5+ (`pip install django`)
 
----
+### Instalación y Ejecución
 
-## 👨‍🏫 Guía de Uso en el Aula
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/freddyguevara085-stack/SinDatosMaje.git
+cd SinDatosMaje
 
-1. **Conexión de Red:**
-   * Conecta tu laptop y los celulares de los alumnos a la misma red Wi-Fi (o crea una **Zona Wi-Fi / Hotspot** desde un teléfono móvil, sin necesidad de tener internet o saldo).
-2. **Abrir la Aplicación:**
-   * En la laptop, abre el navegador en: http://localhost:8000/ (o la IP que reporte la consola, ej: http://192.168.1.7:8000/).
-3. **Enviar un Archivo (Profesor / Emisor):**
-   * Arrastra o selecciona una foto, apunte o PDF en la zona de dibujo.
-   * La aplicación generará automáticamente un código de sala y un código QR con la IP local de tu equipo.
-4. **Recibir el Archivo (Alumno / Receptor):**
-   * El alumno apunta su cámara al código QR (o escribe el código de 6 letras desde el botón de escaneo).
-   * La conexión P2P se establecerá de forma instantánea y el archivo se descargará en su dispositivo sin gastar un solo megabyte.
+# 2. Crear y activar entorno virtual
+python -m venv venv
+venv\Scripts\activate          # Windows
+# source venv/bin/activate     # Linux / macOS
+
+# 3. Instalar Django
+pip install django
+
+# 4. Iniciar el servidor en la red local
+python manage.py runserver 0.0.0.0:8000
+```
+
+Abre `http://localhost:8000/` en tu laptop. Los alumnos se conectan a `http://<TU-IP>:8000/` desde sus celulares.
 
 ---
 
-## 📋 Consejos de Compatibilidad en Red Local
+## Uso en el Aula
 
-* **Cámara en HTTP:** Los navegadores modernos bloquean el acceso a la cámara web a través de direcciones IP por HTTP plano (http://192.168.1.X). Si el escáner muestra la pantalla negra en el móvil, el alumno puede:
-  1. Usar la cámara predeterminada de su teléfono para escanear el QR.
-  2. O ingresar manualmente el código de 6 letras en el recuadro provisto.
-* **Tamaño de Archivo Seguro:** Recomendado para apuntes, presentaciones, fotos y PDFs de hasta **200 MB** para garantizar un uso óptimo de memoria RAM en teléfonos móviles.
+### Paso 1 — Crear la red
+
+Conecta laptop y celulares a la **misma red Wi-Fi**. Puede ser:
+- Un router común (con o sin internet)
+- El hotspot de un celular (**sin saldo ni datos**)
+
+### Paso 2 — Compartir (Profesor)
+
+1. Abre la app en tu laptop
+2. Arrastra o selecciona el archivo (foto, PDF, presentación)
+3. Se genera un **código QR** y un **código de sala de 6 letras**
+
+### Paso 3 — Recibir (Alumno)
+
+1. Escanea el QR con la cámara de su celular, **o**
+2. Abre la app y escribe el código de 6 letras
+3. El archivo se descarga directo — **cero megas consumidos**
 
 ---
 
-## 📄 Licencia
+## Notas de Compatibilidad
 
-Este proyecto está bajo la Licencia MIT. Desarrollado con ❤️ para facilitar el acceso a la educación y el intercambio de conocimiento sin barreras de conectividad.
+| Situación | Solución |
+|---|---|
+| **Cámara bloqueada en HTTP** | Los navegadores móviles bloquean la cámara en `http://` por IP. El alumno puede usar la app de cámara nativa para escanear el QR, o escribir el código de 6 letras manualmente. |
+| **Archivos grandes** | Recomendado hasta **200 MB** (fotos, PDFs, presentaciones). En celulares de gama baja, archivos mayores pueden agotar la RAM del navegador. |
+| **Misma sala en dos pestañas** | Cada pestaña del mismo dispositivo comparte la misma conexión WebRTC. Usa el botón *Salir de la sala* antes de unirte de nuevo. |
+
+---
+
+## Tecnologías
+
+| Tecnología | Uso |
+|---|---|
+| **Django** | Servidor de señalización ligero y App Shell |
+| **WebRTC** | Conexión P2P directa entre dispositivos vía `RTCDataChannel` |
+| **Service Worker** | Caché offline del App Shell (estrategia Cache-First) |
+| **Tailwind CSS** | Maquetación responsiva (empaquetado localmente) |
+| **QRCode.js** | Generación de códigos QR en el navegador |
+| **html5-qrcode** | Lectura de QR vía cámara del dispositivo |
+
+---
+
+## Instalación como App
+
+SinDatosMaje es una **Progressive Web App**. En dispositivos compatibles aparecerá un banner amarillo invitando a instalarla. También puedes:
+
+- **Android Chrome:** Menú ⋮ → *Instalar aplicación*
+- **iOS Safari:** Compartir → *Agregar a pantalla de inicio*
+- **Windows Edge/Chrome:** Ícono de instalación en la barra de direcciones
+
+Una vez instalada, la app carga instantáneamente desde caché, incluso sin conexión.
+
+---
+
+## Licencia
+
+MIT — Libre para usar, modificar y distribuir.
+
+Desarrollado para facilitar el acceso a la educación y el intercambio de conocimiento sin barreras de conectividad.
