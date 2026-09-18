@@ -7,6 +7,8 @@
 **Transferencia de archivos P2P para el aula — sin internet, sin datos, sin excusas.**
 
 
+[![Live Demo](https://img.shields.io/badge/Demo%20en%20Vivo-sindatosmaje.onrender.com-00B4D8?style=for-the-badge&logo=render&logoColor=white)](https://sindatosmaje.onrender.com/)
+
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://python.org)
 [![Django](https://img.shields.io/badge/Django-5%2B-092E20?logo=django&logoColor=white)](https://djangoproject.com)
 [![WebRTC](https://img.shields.io/badge/WebRTC-P2P-333333?logo=webrtc&logoColor=white)](https://webrtc.org)
@@ -14,6 +16,7 @@
 [![License: MIT](https://img.shields.io/badge/Licencia-MIT-yellow.svg)](LICENSE)
 
 </div>
+
 
 ---
 
