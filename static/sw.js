@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sindatos-shell-v1';
+const CACHE_NAME = 'sindatos-shell-v2';
 const SHELL_ASSETS = [
   '/',
   '/manifest.json',
@@ -8,8 +8,11 @@ const SHELL_ASSETS = [
   '/static/vendor/html5-qrcode.min.js',
   '/static/icons/icon-192.png',
   '/static/icons/icon-512.png',
+  '/static/icons/favicon.png',
+  '/static/icons/logo.png',
   '/static/icons/icon.svg'
 ];
+
 
 // Instalación: Pre-cachear todo el App Shell
 self.addEventListener('install', (event) => {
