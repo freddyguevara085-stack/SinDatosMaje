@@ -123,7 +123,7 @@
     }
   </style>
 </head>
-<body class="min-h-[100dvh] flex flex-col justify-between p-4 sm:p-6">
+<body id="top" class="min-h-[100dvh] flex flex-col justify-between p-4 sm:p-6">
 
   <!-- Encabezado -->
   <header class="max-w-xl mx-auto w-full flex items-center justify-between py-2 border-b-2 border-[#333333]">
@@ -134,20 +134,13 @@
       </svg>
       <span class="text-2xl font-bold tracking-wide">SinDatosMaje</span>
     </a>
-    <div class="flex gap-2 items-center">
-      <!-- Botón de acceso a instrucciones -->
-      <a href="#instrucciones" class="bg-[#FFFFA5] hover:bg-[#FFFFA5]/80 text-[#0E2A5C] px-2.5 py-1 border-2 border-[#333333] rounded-md text-xs font-mono-tech font-bold flex items-center gap-1.5 shadow-[2px_2px_0px_#333333] active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer" title="Ver guía de instrucciones paso a paso">
-        <svg class="w-3.5 h-3.5 text-[#0E2A5C]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-        </svg>
-        <span>¿Cómo se usa?</span>
-      </a>
+    <div class="flex gap-1.5 sm:gap-2 items-center flex-shrink-0">
       <!-- PWA Badge estilo sticky note -->
-      <span class="bg-[#FFFFA5] text-[#D12828] px-2 py-0.5 border border-[#333333] shadow-[2px_2px_0px_#333333] transform rotate-3 rounded-sm text-sm font-bold" title="Esta es una PWA instálable">
+      <span class="bg-[#FFFFA5] text-[#D12828] px-2 py-0.5 border border-[#333333] shadow-[2px_2px_0px_#333333] transform rotate-3 rounded-sm text-xs font-bold whitespace-nowrap" title="Esta es una PWA instalable">
         PWA
       </span>
-      <span class="bg-[#FFFFA5] text-[#333333] px-2 py-0.5 border border-[#333333] rounded text-xs font-mono-tech">
-        100% Offline LAN
+      <span class="bg-[#FFFFA5] text-[#333333] px-2 py-0.5 border border-[#333333] rounded text-xs font-mono-tech whitespace-nowrap">
+        100% LAN
       </span>
     </div>
   </header>
@@ -175,9 +168,9 @@
 
     <div class="relative sketch-card p-6 sm:p-8">
       
-      <!-- Cinta adhesiva en la parte superior -->
-      <div class="absolute -top-3 left-1/2 -translate-x-1/2 washi-tape px-6 py-1 text-xs font-mono-tech text-[#333333]">
-        MODO_AULA_v1.0
+      <!-- Cinta adhesiva dinámica en la parte superior -->
+      <div id="modeWashiTape" class="absolute -top-3 left-1/2 -translate-x-1/2 washi-tape px-6 py-1 text-xs font-mono-tech text-[#333333]">
+        MODO_OFFLINE_PURO
       </div>
 
       <!-- Título y subtítulo -->
@@ -207,6 +200,14 @@
         <p id="modeDescription" class="text-[11px] font-mono-tech text-[#333333] text-center mt-1.5 px-2">
           Celular a celular directo vía QR. Cero router, cero servidor, cero internet.
         </p>
+
+        <!-- Botón amplio, cómodo y destacado para ver las Instrucciones -->
+        <a href="#instrucciones" id="openGuideBtn" class="mt-3.5 w-full py-2.5 px-4 bg-[#FFFFA5] hover:bg-[#FFFFA5]/80 text-[#0E2A5C] border-2 border-[#333333] rounded-[14px] font-bold text-sm sm:text-base shadow-[3px_3px_0px_#333333] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_#333333] transition-all flex items-center justify-center gap-2 cursor-pointer font-mono-tech">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5 text-[#0E2A5C] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+          </svg>
+          <span class="tracking-wide">Instrucciones: ¿Cómo se usa?</span>
+        </a>
       </div>
 
 
@@ -621,6 +622,16 @@
         </div>
       </div>
 
+      <!-- Botón para volver arriba cómodamente -->
+      <div class="mt-6 pt-4 border-t-2 border-dashed border-[#333333] flex justify-center">
+        <a href="#top" class="sketch-btn-primary px-6 py-2.5 font-bold text-base shadow-[3px_3px_0px_#333333] active:translate-x-[2px] active:translate-y-[2px] transition-all cursor-pointer flex items-center gap-2">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+          </svg>
+          <span>Subir al Compartidor</span>
+        </a>
+      </div>
+
     </section>
   </main>
 
@@ -745,10 +756,13 @@
       }
     }
 
+    const modeWashiTape = document.getElementById('modeWashiTape');
+
     // Manejo de pestañas de modo
     function setConnectionMode(mode) {
       connectionMode = mode;
       if (mode === 'lan') {
+        if (modeWashiTape) modeWashiTape.innerText = 'MODO_AULA_LAN';
         modeLanBtn.className = 'px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#FFFFA5] text-[#0E2A5C] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all flex items-center gap-1.5';
         modeDirectBtn.className = 'px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#F4F1EA] text-[#333333] hover:bg-[#FFFFA5] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all flex items-center gap-1.5';
         if (directScanResponseArea) directScanResponseArea.classList.add('hidden');
@@ -757,6 +771,7 @@
           modeDescription.innerText = 'Modo Aula: Ambos en la misma Wi-Fi o Hotspot con el servidor Django.';
         }
       } else {
+        if (modeWashiTape) modeWashiTape.innerText = 'MODO_OFFLINE_PURO';
         modeDirectBtn.className = 'px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#FFFFA5] text-[#0E2A5C] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all flex items-center gap-1.5';
         modeLanBtn.className = 'px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#F4F1EA] text-[#333333] hover:bg-[#FFFFA5] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all flex items-center gap-1.5';
         if (hostConfigArea) hostConfigArea.classList.add('hidden');

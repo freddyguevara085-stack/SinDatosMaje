@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sindatos-shell-v5';
+const CACHE_NAME = 'sindatos-shell-v6';
 const SHELL_ASSETS = [
   '/',
   '/manifest.json',
