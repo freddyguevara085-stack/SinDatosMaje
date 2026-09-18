@@ -1,0 +1,1156 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#F4F1EA">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="{% static 'icons/icon.svg' %}">
+  <link rel="apple-touch-icon" href="{% static 'icons/icon-192.png' %}">
+  <title>SinDatosMaje — Transferencia en el Aula</title>
+  
+  <!-- Fuentes locales 100% Offline: Patrick Hand y JetBrains Mono -->
+  <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+  
+  <!-- Tailwind CSS local para funcionamiento sin internet -->
+  <script src="{% static 'vendor/tailwind.js' %}"></script>
+  
+  <!-- QRCode.js local para generación de QR sin dependencias externas -->
+  <script src="{% static 'vendor/qrcode.min.js' %}"></script>
+  
+  <!-- html5-qrcode local para escaneo de QR mediante cámara -->
+  <script src="{% static 'vendor/html5-qrcode.min.js' %}"></script>
+
+  <style>
+    :root {
+      --paper-note: #F4F1EA;
+      --ink-blue: #0E2A5C;
+      --pencil-grey: #333333;
+      --alert-red: #D12828;
+      --highlighter: #FFFFA5;
+      --ballpoint: #0000FF;
+    }
+
+    body {
+      background-color: var(--paper-note);
+      color: var(--ink-blue);
+      font-family: 'Patrick Hand', cursive;
+      /* Fondo de renglones de libreta */
+      background-image: linear-gradient(#e3ded4 1.5px, transparent 1.5px);
+      background-size: 100% 28px;
+    }
+
+    .font-mono-tech {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Bordes con imperfección orgánica estilo dibujo a mano */
+    .sketch-card {
+      background-color: #FFFFFF;
+      border: 2px solid var(--pencil-grey);
+      border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+      box-shadow: 5px 5px 0px var(--pencil-grey);
+    }
+
+    .sketch-btn-primary {
+      background-color: var(--alert-red);
+      color: #FFFFFF;
+      border: 2px solid var(--pencil-grey);
+      border-radius: 255px 25px 225px 25px/25px 225px 25px 255px;
+      box-shadow: 3px 3px 0px var(--pencil-grey);
+      transition: all 0.15s ease-out;
+    }
+
+    .sketch-btn-primary:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 5px 5px 0px var(--pencil-grey);
+    }
+
+    .sketch-btn-primary:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0px var(--pencil-grey);
+    }
+
+    /* Efecto de cinta adhesiva (Washi tape) */
+    .washi-tape {
+      background: rgba(255, 255, 255, 0.85);
+      border-left: 2px dashed #d1ceb5;
+      border-right: 2px dashed #d1ceb5;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      transform: rotate(-2deg);
+    }
+
+    /* Zona de soltar archivos */
+    .dropzone-sketch {
+      border: 2px dashed var(--pencil-grey);
+      border-radius: 12px;
+      background-color: #FAFAF7;
+      transition: background-color 0.2s ease;
+    }
+
+    .dropzone-sketch:hover {
+      background-color: #F0EDE4;
+    }
+
+    /* Centrado y contención del código QR */
+    #qrcode canvas, #qrcode img {
+      margin: 0 auto;
+      display: block;
+      max-width: 160px;
+      max-height: 160px;
+    }
+
+    /* Contenedor y video del escáner html5-qrcode */
+    #reader video {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body class="min-h-[100dvh] flex flex-col justify-between p-4 sm:p-6">
+
+  <!-- Encabezado -->
+  <header class="max-w-xl mx-auto w-full flex items-center justify-between py-2 border-b-2 border-[#333333]">
+    <a href="/" class="flex items-center gap-2 cursor-pointer group" title="Reiniciar / Ir al inicio">
+      <!-- Icono SVG en tinta azul -->
+      <svg class="w-7 h-7 text-[#0E2A5C] group-hover:scale-105 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+      </svg>
+      <span class="text-2xl font-bold tracking-wide">SinDatosMaje</span>
+    </a>
+    <div class="flex gap-2 items-center">
+      <!-- PWA Badge estilo sticky note -->
+      <span class="bg-[#FFFFA5] text-[#D12828] px-2 py-0.5 border border-[#333333] shadow-[2px_2px_0px_#333333] transform rotate-3 rounded-sm text-sm font-bold" title="Esta es una PWA instálable">
+        PWA
+      </span>
+      <span class="bg-[#FFFFA5] text-[#333333] px-2 py-0.5 border border-[#333333] rounded text-xs font-mono-tech">
+        100% Offline LAN
+      </span>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal (Hoja de Libreta) -->
+  <main class="max-w-xl mx-auto w-full my-6">
+
+    <!-- Banner de Instalación PWA (Estilo Sketch-Note / Libreta) -->
+    <div id="pwaInstallBanner" class="hidden mb-4 p-3 bg-[#FFFFA5] border-2 border-[#333333] rounded-[14px] shadow-[4px_4px_0px_#333333] items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <svg class="w-6 h-6 text-[#0E2A5C] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+        </svg>
+        <span class="text-sm font-bold text-[#0E2A5C] leading-tight">
+          ¡Instala SinDatosMaje en tu pantalla de inicio para usarla siempre offline!
+        </span>
+      </div>
+      <button id="pwaInstallBtn" type="button" class="sketch-btn-primary px-3 py-1.5 text-sm font-bold flex items-center gap-1.5 flex-shrink-0 cursor-pointer shadow-[2px_2px_0px_#333333]">
+        <svg class="w-4 h-4 text-white stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        <span>Instalar App</span>
+      </button>
+    </div>
+
+    <div class="relative sketch-card p-6 sm:p-8">
+      
+      <!-- Cinta adhesiva en la parte superior -->
+      <div class="absolute -top-3 left-1/2 -translate-x-1/2 washi-tape px-6 py-1 text-xs font-mono-tech text-[#333333]">
+        MODO_AULA_v1.0
+      </div>
+
+      <!-- Título y subtítulo -->
+      <div class="text-center mt-2 mb-6">
+        <h1 class="text-3xl font-bold text-[#0E2A5C]">Compartidor Relámpago</h1>
+        <p class="text-base text-[#333333] mt-1">
+          Arrastra la foto o el PDF. <span class="bg-[#FFFFA5] px-1">Cero gasto de megas.</span>
+        </p>
+      </div>
+
+      <!-- Zona de carga (Drag and drop) -->
+      <div id="dropzone" class="dropzone-sketch p-8 text-center cursor-pointer flex flex-col items-center justify-center">
+        <svg class="w-12 h-12 text-[#333333] mb-2 stroke-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+        </svg>
+        <p class="text-lg font-bold text-[#0E2A5C]">Toca para elegir o suelta el apunte aquí</p>
+        <p class="text-xs font-mono-tech text-[#333333] mt-1">PNG, JPG, PDF (Sin límite de peso en LAN)</p>
+        
+        <!-- Nota estilo apunte escolar para memoria segura -->
+        <div class="mt-2.5 bg-[#FFFFA5] text-[#333333] border border-[#333333] font-mono-tech px-2.5 py-1 rounded text-xs shadow-[2px_2px_0px_#333333] flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-[#0E2A5C] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>Recomendado: apuntes, fotos y PDFs hasta 200 MB</span>
+        </div>
+        <input type="file" id="fileInput" class="hidden">
+      </div>
+
+      <!-- Área dinámica de transferencia (Código QR / Sala) -->
+      <div id="transferArea" class="mt-6 hidden flex-col items-center justify-center w-full">
+        <div class="w-full border-t-2 border-dashed border-[#333333] pt-4 flex flex-col items-center justify-center text-center">
+          <p class="text-base font-bold mb-3 text-[#0E2A5C]">Escanea para descargar directo:</p>
+          
+          <!-- Recuadro blanco de notas centrado estrictamente vertical -->
+          <div class="bg-white p-4 border-2 border-[#333333] rounded-[16px] shadow-[4px_4px_0px_#333333] flex flex-col items-center justify-center w-full max-w-[240px]">
+            <!-- Canvas contenedor con dimensiones fijas (máx 180x180 px) y margen interno limpio (quiet zone) -->
+            <div id="qrcode" class="w-[180px] h-[180px] max-w-[180px] max-h-[180px] flex items-center justify-center bg-white p-2 box-border overflow-hidden">
+              <span class="text-xs font-mono-tech text-[#333333]">Generando QR...</span>
+            </div>
+
+            <!-- Identificador SALA: [ID] debajo del QR como etiqueta adhesiva amarilla -->
+            <div id="roomBadge" class="bg-[#FFFFA5] text-[#333333] border border-[#333333] font-mono-tech px-3 py-1 mt-3 rounded shadow-[2px_2px_0px_#333333] text-sm font-bold tracking-wider inline-block">
+              SALA: <span id="roomIdText">------</span>
+            </div>
+          </div>
+
+          <!-- Configuración / visualización de IP en red local para QR -->
+          <div id="hostConfigArea" class="mt-3 text-xs font-mono-tech text-[#333333] flex flex-col items-center gap-1">
+            <div class="flex items-center gap-1">
+              <span>URL:</span>
+              <span id="qrUrlDisplay" class="font-bold text-[#0E2A5C] break-all text-[11px]"></span>
+            </div>
+            <button id="changeHostBtn" type="button" class="text-[11px] text-[#0000FF] underline hover:text-[#D12828] cursor-pointer">
+              ✏️ Ajustar IP Local para el QR
+            </button>
+          </div>
+
+          <!-- Estado de conexión -->
+          <div class="flex items-center gap-2 text-xs font-mono-tech text-[#333333] mt-3">
+            <span>Estado:</span>
+            <span id="transferStatus" class="text-[#D12828] font-bold">Esperando que el compañero escanee...</span>
+          </div>
+
+          <!-- Barra de Progreso de Transferencia (Estilo Apunte Escolar / Sketch) -->
+          <div id="progressContainer" class="w-full mt-4 p-3.5 bg-white border-2 border-[#333333] rounded-[16px] shadow-[4px_4px_0px_#333333] hidden flex-col gap-2">
+            <div class="flex items-center justify-between">
+              <span id="progressLabel" class="text-base font-bold text-[#0E2A5C]">Transfiriendo archivo:</span>
+              <span id="progressPercent" class="font-mono-tech text-base font-bold text-[#0E2A5C]">0%</span>
+            </div>
+
+            <!-- Nombre de archivo en fuente monospace -->
+            <div id="progressFileName" class="font-mono-tech text-xs text-[#333333] truncate font-semibold text-left">
+              documento.bin
+            </div>
+
+            <!-- Riel con borde #333333 y sombra estilo boceto -->
+            <div class="w-full bg-[#F4F1EA] border-2 border-[#333333] h-6 rounded-full shadow-[2px_2px_0px_#333333] overflow-hidden p-0.5 relative">
+              <!-- Relleno en gradiente orgánico (Ink Blue -> Ballpoint Blue -> Alert Red) -->
+              <div id="progressBarFill" class="h-full bg-gradient-to-r from-[#0E2A5C] via-[#0000FF] to-[#D12828] rounded-full transition-all duration-100 ease-out" style="width: 0%;"></div>
+            </div>
+
+            <!-- Métricas: Bytes transferidos y Velocidad en JetBrains Mono -->
+            <div class="flex items-center justify-between text-xs font-mono-tech text-[#333333] pt-0.5">
+              <span id="progressBytes">0 KB / 0 KB</span>
+              <span id="progressSpeed" class="font-bold text-[#0000FF]">0.0 KB/s</span>
+            </div>
+          </div>
+
+          <!-- Botón de Salir de la Sala / Cancelar Transferencia -->
+          <div class="mt-4 pt-3 border-t-2 border-dashed border-[#333333] w-full flex justify-center">
+            <button id="leaveRoomBtn" type="button" class="bg-[#F4F1EA] hover:bg-[#FFFFA5] text-[#D12828] border-2 border-[#333333] font-bold px-4 py-2 rounded-[12px] text-base shadow-[3px_3px_0px_#333333] active:translate-x-[2px] active:translate-y-[2px] transition-all cursor-pointer flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+              <span>Salir de la sala</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón de acción -->
+      <div class="mt-6">
+        <button id="scanBtn" class="sketch-btn-primary w-full py-3 text-xl font-bold cursor-pointer flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+          </svg>
+          Escanear QR de un compañero
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer con estilo de pie de página escolar -->
+  <footer class="max-w-xl mx-auto w-full text-center py-4 font-mono-tech text-xs text-[#333333] border-t border-[#333333]">
+    <p>SinDatosMaje © 2026 — Transferencia Directa P2P en el Aula</p>
+    <p class="text-[10px] text-gray-500 mt-0.5">Tus archivos nunca tocan ningún servidor externo.</p>
+  </footer>
+
+  <!-- Modal del Escáner QR con Cámara (Estilo Sketch-Note / Libreta) -->
+  <div id="scannerModal" class="fixed inset-0 bg-[#333333]/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="sketch-card p-6 relative max-w-sm w-full bg-[#FFFFFF] border-2 border-[#333333] shadow-[6px_6px_0px_#333333] flex flex-col items-center">
+      
+      <!-- Botón de cerrar estilo cinta adhesiva (Washi Tape) -->
+      <button id="closeScannerBtn" type="button" class="washi-tape absolute -top-3 right-4 px-3 py-1 text-xs font-mono-tech text-[#D12828] font-bold hover:bg-[#FFFFA5] transition-all cursor-pointer">
+        ✕ CERRAR CÁMARA
+      </button>
+
+      <!-- Encabezado del modal -->
+      <div class="text-center mt-2 mb-3">
+        <h2 class="text-2xl font-bold text-[#0E2A5C]">Escanear QR de Compañero</h2>
+        <p class="text-xs font-mono-tech text-[#333333]">Apunta con la cámara trasera al código</p>
+      </div>
+
+      <!-- Visor de la Cámara con borde gráfico -->
+      <div class="w-full border-2 border-[#333333] rounded-lg overflow-hidden bg-[#F4F1EA] shadow-[3px_3px_0px_#333333] relative flex items-center justify-center min-h-[220px]">
+        <div id="reader" class="w-full"></div>
+      </div>
+
+      <!-- Advertencia amigable de bloqueo de cámara por red local HTTP -->
+      <div class="mt-2.5 w-full text-center text-xs font-mono-tech text-[#D12828] bg-[#FFFFA5] px-2.5 py-1.5 border border-[#333333] rounded shadow-[2px_2px_0px_#333333]">
+        ¿Pantalla negra? Escribe el código manual (la red local HTTP bloquea la cámara).
+      </div>
+
+      <!-- Alternativa manual con entrada de código de sala -->
+      <div class="mt-3 pt-3 border-t-2 border-dashed border-[#333333] w-full text-center">
+        <p class="text-xs font-mono-tech text-[#333333] mb-2">O escribe el código de 6 caracteres:</p>
+        <div class="flex gap-2 justify-center">
+          <input id="manualRoomInput" type="text" maxlength="6" placeholder="EJ: AB12CD" class="font-mono-tech uppercase text-center border-2 border-[#333333] rounded px-3 py-1 text-sm bg-[#F4F1EA] text-[#0E2A5C] focus:outline-none focus:bg-white w-32 shadow-[2px_2px_0px_#333333]">
+          <button id="manualJoinBtn" type="button" class="bg-[#FFFFA5] hover:bg-[#FFFFA5]/80 text-[#333333] border-2 border-[#333333] font-bold px-3 py-1 rounded text-sm shadow-[2px_2px_0px_#333333] active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer">
+            Unirse
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const transferArea = document.getElementById('transferArea');
+    const qrcodeContainer = document.getElementById('qrcode');
+    const changeHostBtn = document.getElementById('changeHostBtn');
+    const scanBtn = document.getElementById('scanBtn');
+    const scannerModal = document.getElementById('scannerModal');
+    const closeScannerBtn = document.getElementById('closeScannerBtn');
+    const manualJoinBtn = document.getElementById('manualJoinBtn');
+    const manualRoomInput = document.getElementById('manualRoomInput');
+    const leaveRoomBtn = document.getElementById('leaveRoomBtn');
+    
+    // Configuración WebRTC Híbrida:
+    // Incluye STUN para cuando haya internet, mientras que en red local offline
+    // Django resuelve automáticamente los hostnames mDNS .local a las IPs de la red local.
+    const rtcConfig = {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+      ]
+    };
+    window.peerConnection = null;
+    window.dataChannel = null;
+    window.currentRoomId = null;
+
+    let html5QrCode = null;
+    let isScanning = false;
+    let pollingInterval = null;
+    let hasRemoteDescription = false;
+    const handledCandidates = new Set();
+    const queuedCandidates = [];
+
+    // 1. Obtención de Host para Red Local (evita problemas con localhost en el QR)
+    function getEffectiveHost() {
+      const savedHost = localStorage.getItem('sindatos_lan_host');
+      if (savedHost) return savedHost;
+      if (window.serverHost) return window.serverHost;
+      return window.location.host;
+    }
+
+    function buildJoinUrl(roomId) {
+      const host = getEffectiveHost();
+      return `${window.location.protocol}//${host}/?join=${roomId}`;
+    }
+
+    function renderQR(roomId) {
+      const joinUrl = buildJoinUrl(roomId);
+      const qrUrlDisplay = document.getElementById('qrUrlDisplay');
+      if (qrUrlDisplay) qrUrlDisplay.innerText = joinUrl;
+
+      qrcodeContainer.innerHTML = '';
+      new QRCode(qrcodeContainer, {
+        text: joinUrl,
+        width: 160,
+        height: 160,
+        colorDark: "#0E2A5C",
+        colorLight: "#FFFFFF",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      const roomIdText = document.getElementById('roomIdText');
+      if (roomIdText) roomIdText.innerText = roomId;
+    }
+
+    if (changeHostBtn) {
+      changeHostBtn.addEventListener('click', () => {
+        const current = getEffectiveHost();
+        const input = prompt(
+          'Ingresa la IP local y puerto de tu PC para el QR (ej: 192.168.1.50:8000):',
+          current
+        );
+        if (input && input.trim()) {
+          localStorage.setItem('sindatos_lan_host', input.trim());
+          if (window.currentRoomId) {
+            renderQR(window.currentRoomId);
+          }
+        }
+      });
+    }
+
+    // 2. Drag & Drop y selección de archivo
+    dropzone.addEventListener('click', () => fileInput.click());
+
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.style.backgroundColor = '#F0EDE4'; });
+    dropzone.addEventListener('dragleave', (e) => { e.preventDefault(); dropzone.style.backgroundColor = '#FAFAF7'; });
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.style.backgroundColor = '#FAFAF7';
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) handleFile(e.target.files[0]);
+    });
+
+    // 3. Flujo Emisor (Offerer)
+    async function handleFile(file) {
+      window.selectedFile = file;
+      transferArea.classList.remove('hidden');
+      transferArea.classList.add('flex');
+      if (scanBtn) scanBtn.classList.add('hidden');
+      
+      const statusEl = document.getElementById('transferStatus');
+      statusEl.innerText = 'Creando sala...';
+      statusEl.className = 'text-[#D12828] font-bold';
+
+      try {
+        const res = await fetch('/api/create-room/', { method: 'POST' });
+        const data = await res.json();
+        const roomId = data.room_id.toUpperCase();
+        window.currentRoomId = roomId;
+        if (data.server_host) {
+          window.serverHost = data.server_host;
+        }
+
+        renderQR(roomId);
+        statusEl.innerText = 'Esperando que el compañero escanee...';
+
+        if (window.peerConnection) window.peerConnection.close();
+        window.peerConnection = new RTCPeerConnection(rtcConfig);
+
+        window.peerConnection.oniceconnectionstatechange = () => {
+          console.log('Emisor ICE State:', window.peerConnection.iceConnectionState);
+          const statusEl = document.getElementById('transferStatus');
+          if (!statusEl) return;
+          const state = window.peerConnection.iceConnectionState;
+          if (state === 'checking') {
+            statusEl.innerText = 'Negociando enlace P2P en red local...';
+            statusEl.className = 'text-[#0000FF] font-bold';
+          } else if (state === 'connected' || state === 'completed') {
+            statusEl.innerText = 'Conectado P2P - Listo para transferir';
+            statusEl.className = 'text-[#1E3F20] bg-[#FFFFA5] px-2.5 py-1 border-2 border-[#333333] rounded font-bold shadow-[2px_2px_0px_#333333] inline-block';
+          } else if (state === 'failed') {
+            statusEl.innerText = 'Fallo de enlace P2P. Verifica estar en la misma Wi-Fi.';
+            statusEl.className = 'text-[#D12828] font-bold';
+          }
+        };
+
+        window.peerConnection.onconnectionstatechange = () => {
+          console.log('Emisor Connection State:', window.peerConnection.connectionState);
+          if (window.peerConnection.connectionState === 'connected') {
+            const statusEl = document.getElementById('transferStatus');
+            if (statusEl && !statusEl.innerText.includes('Transfiriendo') && !statusEl.innerText.includes('completad')) {
+              statusEl.innerText = 'Conectado P2P - Listo para transferir';
+              statusEl.className = 'text-[#1E3F20] bg-[#FFFFA5] px-2.5 py-1 border-2 border-[#333333] rounded font-bold shadow-[2px_2px_0px_#333333] inline-block';
+            }
+          }
+        };
+
+        window.dataChannel = window.peerConnection.createDataChannel('fileTransfer');
+        setupDataChannel(window.dataChannel, true);
+
+        window.peerConnection.onicecandidate = (e) => {
+          if (e.candidate) {
+            const candPayload = e.candidate.toJSON ? e.candidate.toJSON() : {
+              candidate: e.candidate.candidate,
+              sdpMid: e.candidate.sdpMid,
+              sdpMLineIndex: e.candidate.sdpMLineIndex
+            };
+            fetch(`/api/signal/${roomId}/`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ sender: 'offerer', type: 'candidate', candidate: candPayload })
+            }).catch(console.error);
+          }
+        };
+
+        const offer = await window.peerConnection.createOffer();
+        await window.peerConnection.setLocalDescription(offer);
+        const offerPayload = offer.toJSON ? offer.toJSON() : { type: offer.type, sdp: offer.sdp };
+        await fetch(`/api/signal/${roomId}/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sender: 'offerer', type: 'offer', offer: offerPayload })
+        });
+
+        startPolling(roomId, 'offerer');
+
+      } catch (err) {
+        console.error('Error al iniciar WebRTC:', err);
+        statusEl.innerText = 'Error al crear sala';
+      }
+    }
+
+    // 4. Sondeo (Polling) sin borrado destructivo con sequential IDs
+    function startPolling(roomId, role) {
+      if (pollingInterval) clearInterval(pollingInterval);
+      hasRemoteDescription = false;
+      handledCandidates.clear();
+      queuedCandidates.length = 0;
+      let lastMsgId = 0;
+      let pollCount = 0;
+
+      pollingInterval = setInterval(async () => {
+        if (window.peerConnection && (window.peerConnection.connectionState === 'connected' || window.peerConnection.iceConnectionState === 'connected')) {
+          clearInterval(pollingInterval);
+          pollingInterval = null;
+          return;
+        }
+
+        pollCount++;
+        const statusEl = document.getElementById('transferStatus');
+        if (role === 'answerer' && !hasRemoteDescription && pollCount > 10 && statusEl) {
+          statusEl.innerText = 'Buscando oferta... (Pídele al emisor que elija o suelte el archivo)';
+        }
+
+        try {
+          const res = await fetch(`/api/signal/${roomId}/?sender=${role}&after=${lastMsgId}`);
+          if (!res.ok) return;
+          const json = await res.json();
+          const messages = json.messages || [];
+
+          for (const msg of messages) {
+            if (msg.id && msg.id > lastMsgId) {
+              lastMsgId = msg.id;
+            }
+
+            if (role === 'offerer') {
+              if (msg.type === 'answer' && !hasRemoteDescription && window.peerConnection) {
+                await window.peerConnection.setRemoteDescription(new RTCSessionDescription(msg.answer));
+                hasRemoteDescription = true;
+                
+                // Aplicar candidatos en cola
+                for (const cand of queuedCandidates) {
+                  try { await window.peerConnection.addIceCandidate(new RTCIceCandidate(cand)); } catch (e) {}
+                }
+                queuedCandidates.length = 0;
+
+                if (statusEl) {
+                  statusEl.innerText = '¡Receptor conectado! Estableciendo enlace P2P...';
+                  statusEl.className = 'text-[#0000FF] font-bold';
+                }
+              }
+            } else if (role === 'answerer') {
+              if (msg.type === 'offer' && !hasRemoteDescription && window.peerConnection) {
+                await window.peerConnection.setRemoteDescription(new RTCSessionDescription(msg.offer));
+                hasRemoteDescription = true;
+
+                for (const cand of queuedCandidates) {
+                  try { await window.peerConnection.addIceCandidate(new RTCIceCandidate(cand)); } catch (e) {}
+                }
+                queuedCandidates.length = 0;
+
+                const answer = await window.peerConnection.createAnswer();
+                await window.peerConnection.setLocalDescription(answer);
+
+                const answerPayload = answer.toJSON ? answer.toJSON() : { type: answer.type, sdp: answer.sdp };
+                await fetch(`/api/signal/${roomId}/`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ sender: 'answerer', type: 'answer', answer: answerPayload })
+                });
+
+                if (statusEl) {
+                  statusEl.innerText = 'Respuesta enviada. Conectando P2P...';
+                  statusEl.className = 'text-[#0000FF] font-bold';
+                }
+              }
+            }
+
+            // Candidatos ICE
+            if (msg.type === 'candidate' && msg.candidate && window.peerConnection) {
+              const candId = typeof msg.candidate === 'string' ? msg.candidate : (msg.candidate.candidate || JSON.stringify(msg.candidate));
+              if (!handledCandidates.has(candId)) {
+                handledCandidates.add(candId);
+                if (hasRemoteDescription) {
+                  try {
+                    await window.peerConnection.addIceCandidate(new RTCIceCandidate(msg.candidate));
+                  } catch (e) {
+                    console.warn('Candidato ICE omitido:', e);
+                  }
+                } else {
+                  queuedCandidates.push(msg.candidate);
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.error('Error en sondeo de señalización:', e);
+        }
+      }, 800);
+    }
+
+    // 5. Utilidades de Progreso y Métricas (JetBrains Mono para números, Patrick Hand para etiquetas)
+    function formatBytes(bytes) {
+      if (!bytes || bytes <= 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    function updateProgressBar(current, total, label, startTime, fileName) {
+      const container = document.getElementById('progressContainer');
+      const percentEl = document.getElementById('progressPercent');
+      const fillEl = document.getElementById('progressBarFill');
+      const labelEl = document.getElementById('progressLabel');
+      const bytesEl = document.getElementById('progressBytes');
+      const speedEl = document.getElementById('progressSpeed');
+      const fileNameEl = document.getElementById('progressFileName');
+
+      if (container) {
+        container.classList.remove('hidden');
+        container.classList.add('flex');
+      }
+
+      if (fileName && fileNameEl) {
+        fileNameEl.innerText = fileName;
+      }
+
+      if (label && labelEl) {
+        labelEl.innerText = label;
+      }
+
+      const percent = total > 0 ? Math.min(100, Math.round((current / total) * 100)) : 0;
+      if (percentEl) percentEl.innerText = `${percent}%`;
+      if (fillEl) fillEl.style.width = `${percent}%`;
+      if (bytesEl) bytesEl.innerText = `${formatBytes(current)} / ${formatBytes(total)}`;
+
+      if (speedEl && startTime) {
+        const elapsedSec = (performance.now() - startTime) / 1000;
+        if (elapsedSec > 0.15 && current > 0) {
+          const bps = current / elapsedSec;
+          speedEl.innerText = `${formatBytes(bps)}/s`;
+        } else {
+          speedEl.innerText = 'Calculando...';
+        }
+      }
+    }
+
+    // 6. Transmisión del Emisor en trozos con control de saturación (backpressure)
+    const CHUNK_SIZE = 32768; // 32 KB por chunk
+    const BUFFER_THRESHOLD = 65536; // 64 KB umbral bufferedAmountLowThreshold
+
+    function sendFileViaChannel(file, channel) {
+      channel.binaryType = 'arraybuffer';
+      channel.bufferedAmountLowThreshold = BUFFER_THRESHOLD;
+
+      // Envía primero mensaje JSON con los metadatos requeridos:
+      // { "type": "header", "name": file.name, "size": file.size, "mime": file.type }
+      channel.send(JSON.stringify({
+        type: 'header',
+        name: file.name,
+        size: file.size,
+        mime: file.type || 'application/octet-stream'
+      }));
+
+      let offset = 0;
+      const transferStartTime = performance.now();
+      updateProgressBar(0, file.size, 'Enviando apunte...', transferStartTime, file.name);
+
+      function sendNextChunk() {
+        if (!channel || channel.readyState !== 'open') return;
+
+        while (offset < file.size) {
+          // Control de saturación: si el buffer está lleno, esperamos al evento onbufferedamountlow
+          if (channel.bufferedAmount > BUFFER_THRESHOLD) {
+            channel.onbufferedamountlow = () => {
+              channel.onbufferedamountlow = null;
+              sendNextChunk();
+            };
+            return;
+          }
+
+          const slice = file.slice(offset, offset + CHUNK_SIZE);
+          const reader = new FileReader();
+
+          reader.onload = (e) => {
+            if (!channel || channel.readyState !== 'open') return;
+            try {
+              channel.send(e.target.result);
+              offset += e.target.result.byteLength;
+              updateProgressBar(offset, file.size, 'Enviando apunte...', transferStartTime, file.name);
+              sendNextChunk();
+            } catch (err) {
+              console.error('Error transmitiendo trozo:', err);
+            }
+          };
+
+          reader.readAsArrayBuffer(slice);
+          return;
+        }
+
+        // Notificar que se completó el envío
+        channel.send(JSON.stringify({ type: 'done' }));
+        updateProgressBar(file.size, file.size, '¡Archivo enviado con éxito!', transferStartTime, file.name);
+
+        const statusEl = document.getElementById('transferStatus');
+        if (statusEl) {
+          statusEl.innerText = '¡Envío completado exitosamente!';
+          statusEl.className = 'text-[#1E3F20] bg-[#FFFFA5] px-2.5 py-1 border-2 border-[#333333] rounded font-bold shadow-[2px_2px_0px_#333333] inline-block';
+        }
+      }
+
+      sendNextChunk();
+    }
+
+    // 7. Configuración de RTCDataChannel para Emisor y Receptor
+    function setupDataChannel(channel, isOfferer) {
+      channel.binaryType = 'arraybuffer';
+
+      const triggerOpen = () => {
+        console.log('RTCDataChannel ABIERTO con éxito! Listo para transferir.');
+        const statusEl = document.getElementById('transferStatus');
+        if (statusEl) {
+          statusEl.innerText = 'Conectado P2P - Listo para transferir';
+          statusEl.className = 'text-[#1E3F20] bg-[#FFFFA5] px-2.5 py-1 border-2 border-[#333333] rounded font-bold shadow-[2px_2px_0px_#333333] inline-block';
+        }
+
+        if (isOfferer && window.selectedFile) {
+          sendFileViaChannel(window.selectedFile, channel);
+        }
+      };
+
+      if (channel.readyState === 'open') {
+        triggerOpen();
+      } else {
+        channel.onopen = triggerOpen;
+      }
+
+      if (!isOfferer) {
+        let receivedChunks = [];
+        let fileMeta = null;
+        let receivedBytes = 0;
+        let transferStartTime = 0;
+        let isDone = false;
+
+        function finishAndDownload() {
+          if (isDone || !fileMeta || receivedChunks.length === 0) return;
+          isDone = true;
+
+          updateProgressBar(fileMeta.size, fileMeta.size, '¡Descarga completada!', transferStartTime, fileMeta.name);
+
+          // Ensamblar Blob en memoria
+          const blob = new Blob(receivedChunks, { type: fileMeta.mime || 'application/octet-stream' });
+          const downloadUrl = URL.createObjectURL(blob);
+
+          // Disparar descarga automática en el móvil
+          const a = document.createElement('a');
+          a.href = downloadUrl;
+          a.download = fileMeta.name || 'apunte_descargado';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+
+          const statusEl = document.getElementById('transferStatus');
+          if (statusEl) {
+            statusEl.innerHTML = `
+              <div class="flex flex-col items-center gap-2 w-full">
+                <span class="text-[#1E3F20] font-bold">¡Descarga completada con éxito!</span>
+                <a href="${downloadUrl}" download="${fileMeta.name}" class="sketch-btn-primary px-4 py-2 text-base font-bold flex items-center justify-center gap-2 w-full text-center">
+                  <svg class="w-5 h-5 text-white stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                  </svg>
+                  <span>Guardar "${fileMeta.name}"</span>
+                </a>
+              </div>
+            `;
+            statusEl.className = 'bg-[#FFFFA5] p-3 border-2 border-[#333333] rounded-[14px] shadow-[3px_3px_0px_#333333] w-full';
+          }
+        }
+
+        channel.onmessage = async (event) => {
+          const data = event.data;
+
+          if (typeof data === 'string') {
+            try {
+              const msg = JSON.parse(data);
+              if (msg.type === 'header') {
+                fileMeta = msg;
+                receivedChunks = [];
+                receivedBytes = 0;
+                isDone = false;
+                transferStartTime = performance.now();
+                updateProgressBar(0, fileMeta.size, 'Recibiendo apunte...', transferStartTime, fileMeta.name);
+              } else if (msg.type === 'done') {
+                finishAndDownload();
+              }
+            } catch (err) {
+              console.warn('Mensaje de texto no JSON recibido:', data);
+            }
+          } else {
+            let buffer = data;
+            if (data instanceof Blob) {
+              buffer = await data.arrayBuffer();
+            }
+            if (buffer instanceof ArrayBuffer) {
+              receivedChunks.push(buffer);
+              receivedBytes += buffer.byteLength;
+              if (fileMeta) {
+                updateProgressBar(receivedBytes, fileMeta.size, 'Recibiendo apunte...', transferStartTime, fileMeta.name);
+                if (receivedBytes >= fileMeta.size) {
+                  finishAndDownload();
+                }
+              }
+            }
+          }
+        };
+      }
+    }
+
+    // 8. Flujo Receptor (?join=ROOM_ID o al escanear QR)
+    async function initReceiver(roomId) {
+      roomId = roomId.trim().toUpperCase();
+      window.currentRoomId = roomId;
+      const dropzone = document.getElementById('dropzone');
+      const transferArea = document.getElementById('transferArea');
+      const statusEl = document.getElementById('transferStatus');
+      const roomIdText = document.getElementById('roomIdText');
+      const hostConfigArea = document.getElementById('hostConfigArea');
+      const scanBtn = document.getElementById('scanBtn');
+
+      if (dropzone) dropzone.classList.add('hidden');
+      if (scanBtn) scanBtn.classList.add('hidden');
+      if (transferArea) {
+        transferArea.classList.remove('hidden');
+        transferArea.classList.add('flex');
+      }
+      if (roomIdText) roomIdText.innerText = roomId;
+      if (hostConfigArea) hostConfigArea.classList.add('hidden');
+
+      qrcodeContainer.innerHTML = `
+        <div class="flex flex-col items-center justify-center p-2 text-center">
+          <svg class="w-10 h-10 text-[#0E2A5C] mb-1 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+          </svg>
+          <span class="text-xs font-mono-tech text-[#0E2A5C] font-bold">Modo Receptor</span>
+          <span class="text-[10px] font-mono-tech text-[#333333]">Esperando archivo del emisor...</span>
+        </div>
+      `;
+      
+      statusEl.innerText = 'Buscando oferta del emisor...';
+      statusEl.className = 'text-[#D12828] font-bold';
+
+      if (window.peerConnection) window.peerConnection.close();
+      window.peerConnection = new RTCPeerConnection(rtcConfig);
+
+      window.peerConnection.oniceconnectionstatechange = () => {
+        console.log('Receptor ICE State:', window.peerConnection.iceConnectionState);
+        const statusEl = document.getElementById('transferStatus');
+        if (!statusEl) return;
+        const state = window.peerConnection.iceConnectionState;
+        if (state === 'checking') {
+          statusEl.innerText = 'Negociando enlace P2P en red local...';
+          statusEl.className = 'text-[#0000FF] font-bold';
+        } else if (state === 'connected' || state === 'completed') {
+          statusEl.innerText = 'Conectado P2P - Listo para transferir';
+          statusEl.className = 'text-[#1E3F20] bg-[#FFFFA5] px-2.5 py-1 border-2 border-[#333333] rounded font-bold shadow-[2px_2px_0px_#333333] inline-block';
+        } else if (state === 'failed') {
+          statusEl.innerText = 'Fallo de enlace P2P. Verifica estar en la misma Wi-Fi.';
+          statusEl.className = 'text-[#D12828] font-bold';
+        }
+      };
+
+      window.peerConnection.onconnectionstatechange = () => {
+        console.log('Receptor Connection State:', window.peerConnection.connectionState);
+        if (window.peerConnection.connectionState === 'connected') {
+          const statusEl = document.getElementById('transferStatus');
+          if (statusEl && !statusEl.innerText.includes('Recibiendo') && !statusEl.innerText.includes('completad')) {
+            statusEl.innerText = 'Conectado P2P - Listo para transferir';
+            statusEl.className = 'text-[#1E3F20] bg-[#FFFFA5] px-2.5 py-1 border-2 border-[#333333] rounded font-bold shadow-[2px_2px_0px_#333333] inline-block';
+          }
+        }
+      };
+
+      window.peerConnection.ondatachannel = (e) => {
+        console.log('DataChannel recibido en Receptor:', e.channel);
+        window.dataChannel = e.channel;
+        setupDataChannel(window.dataChannel, false);
+      };
+
+      window.peerConnection.onicecandidate = (e) => {
+        if (e.candidate) {
+          const candPayload = e.candidate.toJSON ? e.candidate.toJSON() : {
+            candidate: e.candidate.candidate,
+            sdpMid: e.candidate.sdpMid,
+            sdpMLineIndex: e.candidate.sdpMLineIndex
+          };
+          fetch(`/api/signal/${roomId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sender: 'answerer', type: 'candidate', candidate: candPayload })
+          }).catch(console.error);
+        }
+      };
+
+      startPolling(roomId, 'answerer');
+    }
+
+    // 7. Extracción de Room ID y Escaneo con Cámara
+    function extractRoomId(text) {
+      if (!text) return null;
+      try {
+        const url = new URL(text);
+        const join = url.searchParams.get('join');
+        if (join) return join.trim().toUpperCase();
+      } catch (e) {}
+
+      const match = text.match(/[?&]join=([a-zA-Z0-9_-]+)/i);
+      if (match) return match[1].trim().toUpperCase();
+
+      const clean = text.trim().toUpperCase();
+      if (/^[A-Z0-9_-]{4,10}$/.test(clean)) {
+        return clean;
+      }
+      return clean;
+    }
+
+    async function onScanSuccess(decodedText) {
+      console.log("QR escaneado:", decodedText);
+      const roomId = extractRoomId(decodedText);
+      await stopScanner();
+
+      if (roomId) {
+        const newUrl = `${window.location.protocol}//${window.location.host}/?join=${roomId}`;
+        window.history.pushState({ path: newUrl }, '', newUrl);
+        initReceiver(roomId);
+      } else {
+        alert("Código QR no reconocido. Intenta nuevamente.");
+      }
+    }
+
+    async function startScanner() {
+      scannerModal.classList.remove('hidden');
+      scannerModal.classList.add('flex');
+
+      if (!html5QrCode) {
+        html5QrCode = new Html5Qrcode("reader");
+      }
+
+      const qrConfig = {
+        fps: 10,
+        qrbox: { width: 220, height: 220 },
+        aspectRatio: 1.0
+      };
+
+      try {
+        isScanning = true;
+        // Priorizar cámara trasera
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          qrConfig,
+          onScanSuccess,
+          () => {}
+        );
+      } catch (err) {
+        console.warn("No se pudo iniciar cámara trasera 'environment', probando predeterminada:", err);
+        try {
+          await html5QrCode.start(
+            { facingMode: "user" },
+            qrConfig,
+            onScanSuccess,
+            () => {}
+          );
+        } catch (e2) {
+          console.error("Error al abrir cámara:", e2);
+          alert("No se pudo activar la cámara trasera. Asegúrate de otorgar permisos o ingresa el código manualmente.");
+        }
+      }
+    }
+
+    async function stopScanner() {
+      if (html5QrCode && isScanning) {
+        try {
+          await html5QrCode.stop();
+        } catch (e) {
+          console.warn("Error deteniendo escáner:", e);
+        }
+        isScanning = false;
+      }
+      scannerModal.classList.add('hidden');
+      scannerModal.classList.remove('flex');
+    }
+
+    if (scanBtn) {
+      scanBtn.addEventListener('click', () => {
+        startScanner();
+      });
+    }
+
+    if (closeScannerBtn) {
+      closeScannerBtn.addEventListener('click', () => {
+        stopScanner();
+      });
+    }
+
+    // Cerrar modal al hacer clic en el backdrop
+    if (scannerModal) {
+      scannerModal.addEventListener('click', (e) => {
+        if (e.target === scannerModal) {
+          stopScanner();
+        }
+      });
+    }
+
+    if (manualJoinBtn && manualRoomInput) {
+      manualJoinBtn.addEventListener('click', async () => {
+        const code = manualRoomInput.value.trim().toUpperCase();
+        if (code) {
+          await stopScanner();
+          const newUrl = `${window.location.protocol}//${window.location.host}/?join=${code}`;
+          window.history.pushState({ path: newUrl }, '', newUrl);
+          initReceiver(code);
+        }
+      });
+      manualRoomInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') manualJoinBtn.click();
+      });
+    }
+
+    // 8. Función para Salir de la Sala / Reiniciar a la pantalla principal
+    function leaveRoom() {
+      // Detener sondeo de señalización
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+      }
+
+      // Cerrar conexiones WebRTC abiertas
+      if (window.dataChannel) {
+        try { window.dataChannel.close(); } catch (e) {}
+        window.dataChannel = null;
+      }
+      if (window.peerConnection) {
+        try { window.peerConnection.close(); } catch (e) {}
+        window.peerConnection = null;
+      }
+
+      // Limpiar estados locales
+      window.currentRoomId = null;
+      window.selectedFile = null;
+      hasRemoteDescription = false;
+      handledCandidates.clear();
+      queuedCandidates.length = 0;
+
+      // Limpiar el parámetro ?join= de la URL sin recargar
+      if (window.location.search) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      // Restaurar interfaz a su estado inicial
+      const dropzoneEl = document.getElementById('dropzone');
+      const transferAreaEl = document.getElementById('transferArea');
+      const scanBtnEl = document.getElementById('scanBtn');
+      const hostConfigAreaEl = document.getElementById('hostConfigArea');
+      const fileInputEl = document.getElementById('fileInput');
+      const statusEl = document.getElementById('transferStatus');
+
+      if (fileInputEl) fileInputEl.value = '';
+      if (transferAreaEl) {
+        transferAreaEl.classList.add('hidden');
+        transferAreaEl.classList.remove('flex');
+      }
+      if (dropzoneEl) dropzoneEl.classList.remove('hidden');
+      if (scanBtnEl) scanBtnEl.classList.remove('hidden');
+      if (hostConfigAreaEl) hostConfigAreaEl.classList.remove('hidden');
+
+      if (statusEl) {
+        statusEl.innerText = 'Esperando que el compañero escanee...';
+        statusEl.className = 'text-[#D12828] font-bold';
+      }
+      if (qrcodeContainer) {
+        qrcodeContainer.innerHTML = '';
+      }
+      const progressContainer = document.getElementById('progressContainer');
+      if (progressContainer) {
+        progressContainer.classList.add('hidden');
+        progressContainer.classList.remove('flex');
+      }
+      const progressBarFill = document.getElementById('progressBarFill');
+      if (progressBarFill) {
+        progressBarFill.style.width = '0%';
+      }
+    }
+
+    if (leaveRoomBtn) {
+      leaveRoomBtn.addEventListener('click', leaveRoom);
+    }
+
+    // 9. Detección inicial de URL (?join=AB12CD)
+    const urlParams = new URLSearchParams(window.location.search);
+    const joinRoomId = urlParams.get('join');
+    if (joinRoomId) {
+      initReceiver(joinRoomId.trim().toUpperCase());
+    }
+
+    // 10. PWA Instalación: beforeinstallprompt
+    let deferredPrompt = null;
+    const pwaInstallBanner = document.getElementById('pwaInstallBanner');
+    const pwaInstallBtn = document.getElementById('pwaInstallBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (pwaInstallBanner) {
+        pwaInstallBanner.classList.remove('hidden');
+        pwaInstallBanner.classList.add('flex');
+      }
+    });
+
+    if (pwaInstallBtn) {
+      pwaInstallBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('PWA outcome:', outcome);
+        deferredPrompt = null;
+        if (pwaInstallBanner) {
+          pwaInstallBanner.classList.add('hidden');
+          pwaInstallBanner.classList.remove('flex');
+        }
+      });
+    }
+
+    window.addEventListener('appinstalled', () => {
+      console.log('SinDatosMaje fue instalada exitosamente');
+      if (pwaInstallBanner) {
+        pwaInstallBanner.classList.add('hidden');
+        pwaInstallBanner.classList.remove('flex');
+      }
+    });
+
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(reg => {
+          console.log('PWA Service Worker registrado con éxito en scope:', reg.scope);
+        }).catch(err => {
+          console.error('Error al registrar Service Worker:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
