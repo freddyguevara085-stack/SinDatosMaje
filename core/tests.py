@@ -32,3 +32,15 @@ class SignalingTests(TestCase):
         msgs = poll_res.json().get('messages', [])
         self.assertEqual(len(msgs), 1)
         self.assertEqual(msgs[0]['type'], 'offer')
+
+    def test_home_instructions_section(self):
+        res = self.client.get('/')
+        self.assertEqual(res.status_code, 200)
+        content = res.content.decode('utf-8')
+        self.assertIn('id="instrucciones"', content)
+        self.assertIn('Instrucciones: ¿Cómo se usa?', content)
+        self.assertIn('guideTabOfflineBtn', content)
+        self.assertIn('guideTabLanBtn', content)
+        self.assertIn('guideTabTipsBtn', content)
+        self.assertIn('Modo Offline Puro', content)
+        self.assertIn('Modo Aula', content)

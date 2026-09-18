@@ -41,6 +41,10 @@
       --ballpoint: #0000FF;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       background-color: var(--paper-note);
       color: var(--ink-blue);
@@ -131,6 +135,13 @@
       <span class="text-2xl font-bold tracking-wide">SinDatosMaje</span>
     </a>
     <div class="flex gap-2 items-center">
+      <!-- Botón de acceso a instrucciones -->
+      <a href="#instrucciones" class="bg-[#FFFFA5] hover:bg-[#FFFFA5]/80 text-[#0E2A5C] px-2.5 py-1 border-2 border-[#333333] rounded-md text-xs font-mono-tech font-bold flex items-center gap-1.5 shadow-[2px_2px_0px_#333333] active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer" title="Ver guía de instrucciones paso a paso">
+        <svg class="w-3.5 h-3.5 text-[#0E2A5C]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+        </svg>
+        <span>¿Cómo se usa?</span>
+      </a>
       <!-- PWA Badge estilo sticky note -->
       <span class="bg-[#FFFFA5] text-[#D12828] px-2 py-0.5 border border-[#333333] shadow-[2px_2px_0px_#333333] transform rotate-3 rounded-sm text-sm font-bold" title="Esta es una PWA instálable">
         PWA
@@ -180,15 +191,21 @@
       <!-- Selector de Modo de Conexión (Estilo Boceto Escolar) -->
       <div class="flex flex-col items-center justify-center mb-5">
         <div class="flex items-center justify-center gap-2">
-          <button id="modeDirectBtn" type="button" class="px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#FFFFA5] text-[#0E2A5C] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all">
-            📷 Modo Offline Puro (QR a QR)
+          <button id="modeDirectBtn" type="button" class="px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#FFFFA5] text-[#0E2A5C] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-[#0E2A5C]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+            </svg>
+            <span>Modo Offline Puro (QR a QR)</span>
           </button>
-          <button id="modeLanBtn" type="button" class="px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#F4F1EA] text-[#333333] hover:bg-[#FFFFA5] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all">
-            📶 Modo Aula (Misma Wi-Fi)
+          <button id="modeLanBtn" type="button" class="px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#F4F1EA] text-[#333333] hover:bg-[#FFFFA5] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-[#333333]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
+            </svg>
+            <span>Modo Aula (Misma Wi-Fi)</span>
           </button>
         </div>
         <p id="modeDescription" class="text-[11px] font-mono-tech text-[#333333] text-center mt-1.5 px-2">
-          🎒 Celular a celular directo vía QR. Cero router, cero servidor, cero internet.
+          Celular a celular directo vía QR. Cero router, cero servidor, cero internet.
         </p>
       </div>
 
@@ -235,7 +252,7 @@
               <svg class="w-4 h-4 text-[#D12828]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
               </svg>
-              <span>📷 Escanear QR de Respuesta del Compañero</span>
+              <span>Escanear QR de Respuesta del Compañero</span>
             </button>
             <p class="text-[10px] font-mono-tech text-[#333333] mt-1">Una vez que tu compañero escanee tu QR arriba, escanea su QR de respuesta aquí.</p>
           </div>
@@ -246,8 +263,11 @@
               <span>URL:</span>
               <span id="qrUrlDisplay" class="font-bold text-[#0E2A5C] break-all text-[11px]"></span>
             </div>
-            <button id="changeHostBtn" type="button" class="text-[11px] text-[#0000FF] underline hover:text-[#D12828] cursor-pointer">
-              ✏️ Ajustar IP Local para el QR
+            <button id="changeHostBtn" type="button" class="text-[11px] text-[#0000FF] underline hover:text-[#D12828] cursor-pointer flex items-center gap-1">
+              <svg class="w-3 h-3 text-[#0000FF]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+              </svg>
+              <span>Ajustar IP Local para el QR</span>
             </button>
           </div>
 
@@ -307,6 +327,298 @@
       </div>
 
     </div>
+
+    <!-- Apartado para las Instrucciones de Uso (Estilo Boceto Cuaderno Escolar) -->
+    <section id="instrucciones" class="relative sketch-card p-6 sm:p-8 mt-6">
+      
+      <!-- Cinta adhesiva en la parte superior -->
+      <div class="absolute -top-3 left-1/2 -translate-x-1/2 washi-tape px-6 py-1 text-xs font-mono-tech text-[#333333]">
+        GUIA_DE_USO_PASO_A_PASO
+      </div>
+
+      <!-- Encabezado de la Sección -->
+      <div class="text-center mt-2 mb-5">
+        <div class="inline-flex items-center justify-center gap-2">
+          <svg class="w-6 h-6 text-[#0E2A5C]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+          </svg>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#0E2A5C]">Instrucciones: ¿Cómo se usa?</h2>
+        </div>
+        <p class="text-sm text-[#333333] mt-1">
+          Aprende a compartir tus apuntes y archivos en el aula <span class="bg-[#FFFFA5] px-1 font-bold">sin gastar datos móviles</span>.
+        </p>
+      </div>
+
+      <!-- Selector de Pestañas de Instrucción -->
+      <div class="flex flex-wrap items-center justify-center gap-2 mb-5">
+        <button id="guideTabOfflineBtn" type="button" class="px-3 py-1.5 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#FFFFA5] text-[#0E2A5C] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-[#0E2A5C]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+          </svg>
+          <span>1. Modo Offline Puro</span>
+        </button>
+        <button id="guideTabLanBtn" type="button" class="px-3 py-1.5 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#F4F1EA] text-[#333333] hover:bg-[#FFFFA5] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-[#333333]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
+          </svg>
+          <span>2. Modo Aula (Wi-Fi)</span>
+        </button>
+        <button id="guideTabTipsBtn" type="button" class="px-3 py-1.5 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#F4F1EA] text-[#333333] hover:bg-[#FFFFA5] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-[#333333]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+          </svg>
+          <span>3. Consejos y Ayuda</span>
+        </button>
+      </div>
+
+      <!-- Panel 1: Modo Offline Puro (QR a QR entre Celulares) -->
+      <div id="guidePanelOffline" class="flex flex-col gap-3">
+        <!-- Banner resumen -->
+        <div class="bg-[#FFFFA5] text-[#0E2A5C] border-2 border-[#333333] rounded-[12px] p-3 shadow-[2px_2px_0px_#333333] flex items-center gap-2.5">
+          <svg class="w-5 h-5 text-[#D12828] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+          <div class="text-xs font-mono-tech leading-snug">
+            <strong class="text-[#0E2A5C]">Celular a celular directo:</strong> Cero laptop, cero servidor y cero internet. La transferencia viaja por la antena Wi-Fi local sin gastar saldo ni megas.
+          </div>
+        </div>
+
+        <!-- Paso 1 -->
+        <div class="p-3.5 bg-white border-2 border-[#333333] rounded-[14px] shadow-[3px_3px_0px_#333333] flex items-start gap-3">
+          <div class="flex-shrink-0 w-8 h-8 bg-[#FFFFA5] border-2 border-[#333333] rounded-full shadow-[1.5px_1.5px_0px_#333333] flex items-center justify-center font-mono-tech font-bold text-xs text-[#0E2A5C]">
+            01
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-[#0E2A5C] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
+              </svg>
+              <h4 class="font-bold text-base text-[#0E2A5C] leading-tight">Misma Red Local o Hotspot Móvil</h4>
+            </div>
+            <p class="text-xs text-[#333333] mt-1 leading-relaxed">
+              Ambos celulares deben estar en la misma red. Si no hay Wi-Fi en el aula, un celular activa su <strong>Zona Wi-Fi portátil / Compartir Internet</strong> (¡no necesita datos móviles activos!) y el otro celular se conecta a esa red.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="p-3.5 bg-white border-2 border-[#333333] rounded-[14px] shadow-[3px_3px_0px_#333333] flex items-start gap-3">
+          <div class="flex-shrink-0 w-8 h-8 bg-[#FFFFA5] border-2 border-[#333333] rounded-full shadow-[1.5px_1.5px_0px_#333333] flex items-center justify-center font-mono-tech font-bold text-xs text-[#0E2A5C]">
+            02
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-[#0E2A5C] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+              </svg>
+              <h4 class="font-bold text-base text-[#0E2A5C] leading-tight">El Emisor selecciona el archivo</h4>
+            </div>
+            <p class="text-xs text-[#333333] mt-1 leading-relaxed">
+              En el celular que enviará el archivo, selecciona la opción <strong>Modo Offline Puro</strong> arriba, toca el área punteada y elige el apunte, foto o PDF. En pantalla se generará su <strong>Código QR de Oferta</strong>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 3 -->
+        <div class="p-3.5 bg-white border-2 border-[#333333] rounded-[14px] shadow-[3px_3px_0px_#333333] flex items-start gap-3">
+          <div class="flex-shrink-0 w-8 h-8 bg-[#FFFFA5] border-2 border-[#333333] rounded-full shadow-[1.5px_1.5px_0px_#333333] flex items-center justify-center font-mono-tech font-bold text-xs text-[#0E2A5C]">
+            03
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-[#0E2A5C] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <h4 class="font-bold text-base text-[#0E2A5C] leading-tight">El Receptor escanea la oferta</h4>
+            </div>
+            <p class="text-xs text-[#333333] mt-1 leading-relaxed">
+              En el celular del receptor, pulsa el botón <strong>"Escanear QR de un compañero"</strong> y enfoca con la cámara el QR del emisor. Tras leerlo, la pantalla del receptor generará automáticamente su propio <strong>QR de Respuesta</strong>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 4 -->
+        <div class="p-3.5 bg-white border-2 border-[#333333] rounded-[14px] shadow-[3px_3px_0px_#333333] flex items-start gap-3">
+          <div class="flex-shrink-0 w-8 h-8 bg-[#FFFFA5] border-2 border-[#333333] rounded-full shadow-[1.5px_1.5px_0px_#333333] flex items-center justify-center font-mono-tech font-bold text-xs text-[#0E2A5C]">
+            04
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-[#0E2A5C] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+              <h4 class="font-bold text-base text-[#0E2A5C] leading-tight">El Emisor escanea la respuesta</h4>
+            </div>
+            <p class="text-xs text-[#333333] mt-1 leading-relaxed">
+              En el celular del emisor, pulsa el botón <strong>"Escanear QR de Respuesta del Compañero"</strong> y apunta la cámara a la pantalla del receptor. Esto completa el enlace de mano (handshake) WebRTC.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 5 -->
+        <div class="p-3.5 bg-white border-2 border-[#333333] rounded-[14px] shadow-[3px_3px_0px_#333333] flex items-start gap-3">
+          <div class="flex-shrink-0 w-8 h-8 bg-[#FFFFA5] border-2 border-[#333333] rounded-full shadow-[1.5px_1.5px_0px_#333333] flex items-center justify-center font-mono-tech font-bold text-xs text-[#0E2A5C]">
+            05
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-[#0E2A5C] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <h4 class="font-bold text-base text-[#0E2A5C] leading-tight">¡Enlace P2P y descarga directa!</h4>
+            </div>
+            <p class="text-xs text-[#333333] mt-1 leading-relaxed">
+              El túnel directo se activa, verán la barra de progreso avanzar en tiempo real y el archivo se descargará automáticamente en el dispositivo receptor sin tocar la nube.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 2: Modo Aula (Wi-Fi con Servidor Django) -->
+      <div id="guidePanelLan" class="hidden flex-col gap-3">
+        <!-- Banner resumen -->
+        <div class="bg-[#FFFFA5] text-[#0E2A5C] border-2 border-[#333333] rounded-[12px] p-3 shadow-[2px_2px_0px_#333333] flex items-center gap-2.5">
+          <svg class="w-5 h-5 text-[#0000FF] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+          </svg>
+          <div class="text-xs font-mono-tech leading-snug">
+            <strong class="text-[#0E2A5C]">Modo asistido por servidor local:</strong> Perfecto cuando el profesor o un alumno corre la app en su laptop. Permite compartir con un solo escaneo o con un código de 6 letras.
+          </div>
+        </div>
+
+        <!-- Paso 1 -->
+        <div class="p-3.5 bg-white border-2 border-[#333333] rounded-[14px] shadow-[3px_3px_0px_#333333] flex items-start gap-3">
+          <div class="flex-shrink-0 w-8 h-8 bg-[#FFFFA5] border-2 border-[#333333] rounded-full shadow-[1.5px_1.5px_0px_#333333] flex items-center justify-center font-mono-tech font-bold text-xs text-[#0E2A5C]">
+            01
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-[#0E2A5C] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
+              </svg>
+              <h4 class="font-bold text-base text-[#0E2A5C] leading-tight">Conectarse a la Wi-Fi del Aula</h4>
+            </div>
+            <p class="text-xs text-[#333333] mt-1 leading-relaxed">
+              La laptop que actúa como servidor y los celulares de los alumnos deben estar conectados a la misma red Wi-Fi escolar o al hotspot de la laptop.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="p-3.5 bg-white border-2 border-[#333333] rounded-[14px] shadow-[3px_3px_0px_#333333] flex items-start gap-3">
+          <div class="flex-shrink-0 w-8 h-8 bg-[#FFFFA5] border-2 border-[#333333] rounded-full shadow-[1.5px_1.5px_0px_#333333] flex items-center justify-center font-mono-tech font-bold text-xs text-[#0E2A5C]">
+            02
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-[#0E2A5C] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+              </svg>
+              <h4 class="font-bold text-base text-[#0E2A5C] leading-tight">Crear la Sala con el Archivo</h4>
+            </div>
+            <p class="text-xs text-[#333333] mt-1 leading-relaxed">
+              En la laptop o emisor, selecciona <strong>Modo Aula</strong> y suelta el archivo. Aparecerá un código de sala de 6 letras (ej. <span class="font-mono-tech bg-[#FFFFA5] px-1 font-bold">AB12CD</span>) junto a su código QR.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 3 -->
+        <div class="p-3.5 bg-white border-2 border-[#333333] rounded-[14px] shadow-[3px_3px_0px_#333333] flex items-start gap-3">
+          <div class="flex-shrink-0 w-8 h-8 bg-[#FFFFA5] border-2 border-[#333333] rounded-full shadow-[1.5px_1.5px_0px_#333333] flex items-center justify-center font-mono-tech font-bold text-xs text-[#0E2A5C]">
+            03
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-[#0E2A5C] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+              </svg>
+              <h4 class="font-bold text-base text-[#0E2A5C] leading-tight">Unirse por QR o Código Manual</h4>
+            </div>
+            <p class="text-xs text-[#333333] mt-1 leading-relaxed">
+              Los alumnos tocan <strong>"Escanear QR de un compañero"</strong> y escanean el QR. <em>¿La cámara sale negra por estar en red local HTTP?</em> No hay problema: escribe el código de 6 caracteres en el campo manual y pulsa <strong>Unirse</strong>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 4 -->
+        <div class="p-3.5 bg-white border-2 border-[#333333] rounded-[14px] shadow-[3px_3px_0px_#333333] flex items-start gap-3">
+          <div class="flex-shrink-0 w-8 h-8 bg-[#FFFFA5] border-2 border-[#333333] rounded-full shadow-[1.5px_1.5px_0px_#333333] flex items-center justify-center font-mono-tech font-bold text-xs text-[#0E2A5C]">
+            04
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-[#0E2A5C] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+              </svg>
+              <h4 class="font-bold text-base text-[#0E2A5C] leading-tight">Descarga Directa por la LAN</h4>
+            </div>
+            <p class="text-xs text-[#333333] mt-1 leading-relaxed">
+              El servidor coordina la conexión y los archivos viajan por WebRTC a velocidad máxima de la red Wi-Fi local (50–300 Mbps) sin tocar internet.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 3: Consejos Útiles y Preguntas Frecuentes -->
+      <div id="guidePanelTips" class="hidden flex-col gap-3">
+        <!-- Tarjeta 1: Cámara en negro -->
+        <div class="p-3.5 bg-white border-2 border-[#333333] rounded-[14px] shadow-[3px_3px_0px_#333333]">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-[#D12828] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            <h4 class="font-bold text-base text-[#0E2A5C]">¿Por qué la cámara sale negra en el celular?</h4>
+          </div>
+          <p class="text-xs text-[#333333] mt-1.5 leading-relaxed">
+            Por estrictas políticas de seguridad móvil, Chrome y Safari bloquean el acceso a la cámara si la página no usa HTTPS (a excepción de <code class="font-mono-tech bg-[#F4F1EA] px-1 rounded">localhost</code>). Si estás conectado por la IP local del profesor (ej. <code class="font-mono-tech bg-[#F4F1EA] px-1 rounded">http://192.168.1.50:8000</code>), <strong>la cámara se bloqueará</strong>.
+          </p>
+          <div class="mt-2 bg-[#FFFFA5] border border-[#333333] p-2 rounded text-xs font-mono-tech text-[#0E2A5C]">
+            <strong>Solución:</strong> En Modo Aula no necesitas la cámara. Simplemente introduce el código de sala de 6 letras en el modal y pulsa <strong>Unirse</strong>.
+          </div>
+        </div>
+
+        <!-- Tarjeta 2: Sin saldo ni router -->
+        <div class="p-3.5 bg-white border-2 border-[#333333] rounded-[14px] shadow-[3px_3px_0px_#333333]">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-[#0000FF] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <h4 class="font-bold text-base text-[#0E2A5C]">¿Cómo usarlo sin saldo ni internet móvil?</h4>
+          </div>
+          <p class="text-xs text-[#333333] mt-1.5 leading-relaxed">
+            Cualquier teléfono inteligente puede compartir su red activando <em>"Zona Wi-Fi portátil / Punto de acceso"</em>. No se requiere plan de datos ni saldo porque SinDatosMaje solo usa el enlace de radio local entre los teléfonos. Puedes incluso desactivar los datos móviles para comprobarlo.
+          </p>
+        </div>
+
+        <!-- Tarjeta 3: PWA -->
+        <div class="p-3.5 bg-white border-2 border-[#333333] rounded-[14px] shadow-[3px_3px_0px_#333333]">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-[#0E2A5C] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+            </svg>
+            <h4 class="font-bold text-base text-[#0E2A5C]">Instalar como App en tu teléfono (PWA)</h4>
+          </div>
+          <p class="text-xs text-[#333333] mt-1.5 leading-relaxed">
+            Pulsa el botón amarillo <strong>"Instalar App"</strong> en el banner superior, o ve al menú de tu navegador y selecciona <em>"Agregar a la pantalla principal"</em>. La app se guardará en tu móvil con su propio icono y funcionará instantáneamente sin depender de abrir el buscador.
+          </p>
+        </div>
+
+        <!-- Tarjeta 4: Tamaños recomendados -->
+        <div class="p-3.5 bg-white border-2 border-[#333333] rounded-[14px] shadow-[3px_3px_0px_#333333]">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-[#0E2A5C] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <h4 class="font-bold text-base text-[#0E2A5C]">Formatos y tamaños recomendados</h4>
+          </div>
+          <p class="text-xs text-[#333333] mt-1.5 leading-relaxed">
+            Puedes transferir fotos de la pizarra (JPG, PNG), documentos y libros (PDF, DOCX), presentaciones (PPTX) y archivos comprimidos (ZIP). Para una fluidez óptima en navegadores móviles, se aconsejan archivos de hasta 200 MB por transferencia.
+          </p>
+        </div>
+      </div>
+
+    </section>
   </main>
 
   <!-- Footer con estilo de pie de página escolar -->
@@ -425,25 +737,74 @@
     function setConnectionMode(mode) {
       connectionMode = mode;
       if (mode === 'lan') {
-        modeLanBtn.className = 'px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#FFFFA5] text-[#0E2A5C] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all';
-        modeDirectBtn.className = 'px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#F4F1EA] text-[#333333] hover:bg-[#FFFFA5] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all';
+        modeLanBtn.className = 'px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#FFFFA5] text-[#0E2A5C] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all flex items-center gap-1.5';
+        modeDirectBtn.className = 'px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#F4F1EA] text-[#333333] hover:bg-[#FFFFA5] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all flex items-center gap-1.5';
         if (directScanResponseArea) directScanResponseArea.classList.add('hidden');
         if (hostConfigArea) hostConfigArea.classList.remove('hidden');
         if (modeDescription) {
-          modeDescription.innerText = '📶 Modo Aula: Ambos en la misma Wi-Fi o Hotspot con el servidor Django.';
+          modeDescription.innerText = 'Modo Aula: Ambos en la misma Wi-Fi o Hotspot con el servidor Django.';
         }
       } else {
-        modeDirectBtn.className = 'px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#FFFFA5] text-[#0E2A5C] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all';
-        modeLanBtn.className = 'px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#F4F1EA] text-[#333333] hover:bg-[#FFFFA5] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all';
+        modeDirectBtn.className = 'px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#FFFFA5] text-[#0E2A5C] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all flex items-center gap-1.5';
+        modeLanBtn.className = 'px-3 py-1 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#F4F1EA] text-[#333333] hover:bg-[#FFFFA5] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all flex items-center gap-1.5';
         if (hostConfigArea) hostConfigArea.classList.add('hidden');
         if (modeDescription) {
-          modeDescription.innerText = '🎒 Celular a celular directo vía QR. Cero router, cero servidor, cero internet.';
+          modeDescription.innerText = 'Celular a celular directo vía QR. Cero router, cero servidor, cero internet.';
         }
       }
     }
 
     if (modeLanBtn) modeLanBtn.addEventListener('click', () => setConnectionMode('lan'));
     if (modeDirectBtn) modeDirectBtn.addEventListener('click', () => setConnectionMode('direct'));
+
+    // Manejo de pestañas del Manual de Instrucciones
+    const guideTabOfflineBtn = document.getElementById('guideTabOfflineBtn');
+    const guideTabLanBtn = document.getElementById('guideTabLanBtn');
+    const guideTabTipsBtn = document.getElementById('guideTabTipsBtn');
+    const guidePanelOffline = document.getElementById('guidePanelOffline');
+    const guidePanelLan = document.getElementById('guidePanelLan');
+    const guidePanelTips = document.getElementById('guidePanelTips');
+
+    function switchGuideTab(active) {
+      const activeClass = 'px-3 py-1.5 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#FFFFA5] text-[#0E2A5C] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all flex items-center gap-1.5';
+      const inactiveClass = 'px-3 py-1.5 text-xs font-mono-tech border-2 border-[#333333] rounded-md font-bold bg-[#F4F1EA] text-[#333333] hover:bg-[#FFFFA5] shadow-[2px_2px_0px_#333333] cursor-pointer transition-all flex items-center gap-1.5';
+
+      if (guideTabOfflineBtn) guideTabOfflineBtn.className = (active === 'offline') ? activeClass : inactiveClass;
+      if (guideTabLanBtn) guideTabLanBtn.className = (active === 'lan') ? activeClass : inactiveClass;
+      if (guideTabTipsBtn) guideTabTipsBtn.className = (active === 'tips') ? activeClass : inactiveClass;
+
+      if (guidePanelOffline) {
+        if (active === 'offline') {
+          guidePanelOffline.classList.remove('hidden');
+          guidePanelOffline.classList.add('flex');
+        } else {
+          guidePanelOffline.classList.add('hidden');
+          guidePanelOffline.classList.remove('flex');
+        }
+      }
+      if (guidePanelLan) {
+        if (active === 'lan') {
+          guidePanelLan.classList.remove('hidden');
+          guidePanelLan.classList.add('flex');
+        } else {
+          guidePanelLan.classList.add('hidden');
+          guidePanelLan.classList.remove('flex');
+        }
+      }
+      if (guidePanelTips) {
+        if (active === 'tips') {
+          guidePanelTips.classList.remove('hidden');
+          guidePanelTips.classList.add('flex');
+        } else {
+          guidePanelTips.classList.add('hidden');
+          guidePanelTips.classList.remove('flex');
+        }
+      }
+    }
+
+    if (guideTabOfflineBtn) guideTabOfflineBtn.addEventListener('click', () => switchGuideTab('offline'));
+    if (guideTabLanBtn) guideTabLanBtn.addEventListener('click', () => switchGuideTab('lan'));
+    if (guideTabTipsBtn) guideTabTipsBtn.addEventListener('click', () => switchGuideTab('tips'));
 
     // Esperar a que la recolección de candidatos ICE termine para incluir todos los candidatos en el SDP
     function waitForIceGathering(pc) {
