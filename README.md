@@ -1,8 +1,9 @@
 <div align="center">
 
-<img src="static/icons/logo.png" alt="SinDatosMaje Logo" width="380" />
+<img src="https://raw.githubusercontent.com/freddyguevara085-stack/SinDatosMaje/main/static/icons/logo.png" alt="SinDatosMaje Logo" width="380" />
 
 # SinDatosMaje
+
 
 **Transferencia de archivos P2P para el aula — sin internet, sin datos, sin excusas.**
 
