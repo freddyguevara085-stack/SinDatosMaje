@@ -1,12 +1,11 @@
 <div align="center">
 
-<img src="static/icons/logo.png" alt="SinDatosMaje Logo - Pasarse el papelito entre pupitres" width="220" />
+<img src="static/icons/logo.png" alt="SinDatosMaje Logo" width="380" />
 
 # SinDatosMaje
 
 **Transferencia de archivos P2P para el aula — sin internet, sin datos, sin excusas.**
 
-*El clásico papelito pasado bajo el pupitre, pero en versión digital P2P.* 🇳🇮
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://python.org)
 [![Django](https://img.shields.io/badge/Django-5%2B-092E20?logo=django&logoColor=white)](https://djangoproject.com)
